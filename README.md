@@ -1,1 +1,3 @@
-# aframe-xr-boilerplate
+ar-starter-kit
+=============
+
