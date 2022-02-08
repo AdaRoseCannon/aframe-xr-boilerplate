@@ -62,6 +62,8 @@ if you set the `fall` property the object won't fall unless the floor underneath
 This component works by comparing the objects position between frames. Ideally this would run after any movement happen but before it is rendered.
 To enable this you should place this component after any components which move the object such as `wasd-controls`.
 
+If the object needs to float off the floor (like the camera) then set the height property and it will stay that far from the ground.
+
 ```html
-<a-entity wasd-controls="acceleration:20;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;" look-controls>
+<a-camera wasd-controls="acceleration:20;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;height:1.65;" look-controls>
 ```

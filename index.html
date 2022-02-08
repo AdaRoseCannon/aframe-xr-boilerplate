@@ -54,16 +54,22 @@
     exposure=""
 	>
     <a-assets>
-      <a-asset-item id="building" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
-      <a-asset-item id="navmesh" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
+      <a-asset-item id="building-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
+      <a-asset-item id="navmesh-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
       <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
       <a-mixin ></a-mixin>
     </a-assets>
 
-    <a-entity wasd-controls="acceleration:30;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;" position="-1 0 1" look-controls="pointerLockEnabled: false" id="cameraRig">
+    <a-entity position="-1 0 1" id="cameraRig">
       <!-- camera -->
-      <a-entity id="head" camera="near:0.01;" position="0 1.65 0.15"></a-entity>
+      <a-entity id="head"
+        camera="near:0.01;"
+        look-controls="pointerLockEnabled: false"
+        position="0 1.65 0"
+        wasd-controls="acceleration:30;"
+        simple-navmesh-constraint="navmesh:#navmesh;fall:0.5;height:1.65;"
+      ></a-entity>
       <!-- hand controls -->
       <a-entity 
                 hand-controls="hand:left"
@@ -80,8 +86,8 @@
 		<a-light id="dirlight" auto-shadow-cam intensity="0.4" light="castShadow:true;type:directional" position="10 10 10"></a-light>
     <a-entity hide-on-enter-ar environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
 		<a-entity rotation="0 -45 0" position="0 0.2 0" hide-on-enter-ar>
-      <a-gltf-model id="navmesh-el" src="#navmesh" visible="false"></a-gltf-model>
-      <a-gltf-model src="#building"
+      <a-gltf-model id="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
+      <a-gltf-model src="#building-glb"
         lightmap="src:#bake;intensity: 10; filter:Window,Ceiling,floor;"
         depthwrite="true"
         window-replace="Glass"

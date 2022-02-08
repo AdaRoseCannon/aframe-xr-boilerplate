@@ -10,12 +10,15 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     },
     fall: {
       default: 0.5
+    },
+    height: {
+      default: 0
     }
   },
 
   init: function () {
     this.lastPosition = new THREE.Vector3();
-    this.lastPosition.copy(this.el.object3D.position);
+    this.el.object3D.getWorldPosition(this.lastPosition);
   },
   
   update: function () {
@@ -29,9 +32,9 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
   },
 
   tick: (function () {
-    var nextPosition = new THREE.Vector3();
-    var tempVec = new THREE.Vector3();
-    var scanPattern = [
+    const nextPosition = new THREE.Vector3();
+    const tempVec = new THREE.Vector3();
+    const scanPattern = [
       [0,1], // Default the next location
       [30,0.4], // A little to the side shorter range
       [-30,0.4], // A little to the side shorter range
@@ -40,22 +43,21 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
       [80,0.06], // Perpendicular very short range
       [-80,0.06], // Perpendicular very short range
     ];
-    var down = new THREE.Vector3(0,-1,0);
-    var raycaster = new THREE.Raycaster();
-    var gravity = -1;
-    var maxYVelocity = 0.5;
-    var yVel = 0;
-    var results = [];
+    const down = new THREE.Vector3(0,-1,0);
+    const raycaster = new THREE.Raycaster();
+    const gravity = -1;
+    const maxYVelocity = 0.5;
+    const results = [];
+    let yVel = 0;
     
     return function (time, delta) {
-      var el = this.el;
+      const el = this.el;
       if (this.objects.length === 0) return;
 
-      // Get movement vector and translate position.
-      nextPosition.copy(this.el.object3D.position);
+      this.el.object3D.getWorldPosition(nextPosition);
       if (nextPosition.distanceTo(this.lastPosition) === 0) return;
       
-      var didHit = false;
+      let didHit = false;
       
       // So that it does not get stuck it takes as few samples around the user and finds the most appropriate
       for (const [angle, distance] of scanPattern) {
@@ -64,26 +66,32 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
         tempVec.multiplyScalar(distance);
         tempVec.add(this.lastPosition);
         tempVec.y += maxYVelocity;
+        tempVec.y -= this.data.height;
         raycaster.set(tempVec, down);
         raycaster.far = this.data.fall > 0 ? this.data.fall + maxYVelocity : Infinity;
-        var intersects = raycaster.intersectObjects(this.objects, true, results);
-        if (intersects.length) {
-          if (el.object3D.position.y - (intersects[0].point.y - yVel*2) > 0.01) {
+        raycaster.intersectObjects(this.objects, true, results);
+        if (results.length) {
+          const hitPos = results[0].point;
+          hitPos.y += this.data.height;
+          if (nextPosition.y - (hitPos.y - yVel*2) > 0.01) {
             yVel += Math.max(gravity * delta * 0.001, -maxYVelocity);
-            intersects[0].point.y = el.object3D.position.y + yVel;
-            el.object3D.position.copy(intersects[0].point);
+            hitPos.y = nextPosition.y + yVel;
           } else {
-            el.object3D.position.copy(intersects[0].point);
             yVel = 0;
           }
-          this.lastPosition.copy(this.el.object3D.position);
+          el.object3D.position.copy(hitPos);
+          this.el.object3D.parent.worldToLocal(this.el.object3D.position);
+          this.lastPosition.copy(hitPos);
           results.splice(0);
           didHit = true;
           break;
         }
       }
       
-      if (!didHit) this.el.object3D.position.copy(this.lastPosition);
+      if (!didHit) {
+        this.el.object3D.position.copy(this.lastPosition);
+        this.el.object3D.parent.worldToLocal(this.el.object3D.position);
+      }
     }
   }())
 });
