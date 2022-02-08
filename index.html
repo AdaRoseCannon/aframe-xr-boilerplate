@@ -12,7 +12,7 @@
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
-  <script src="model-utils.js" type="module"></script>
+  <script src="model-utils.js"></script>
 	<script src="main.js"></script>
   <style>
 		body {
@@ -54,14 +54,14 @@
     exposure=""
 	>
     <a-assets>
-      <a-asset-item id="building" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1643825373700"></a-asset-item>
-      <a-asset-item id="navmesh" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1643822637100"></a-asset-item>
-      <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(1).jpg?v=1643805356500">
+      <a-asset-item id="building" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
+      <a-asset-item id="navmesh" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
+      <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
       <a-mixin ></a-mixin>
     </a-assets>
 
-    <a-entity wasd-controls="acceleration:20;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;" position="-1 0 1" look-controls="pointerLockEnabled: false" id="cameraRig">
+    <a-entity wasd-controls="acceleration:30;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;" position="-1 0 1" look-controls="pointerLockEnabled: false" id="cameraRig">
       <!-- camera -->
       <a-entity id="head" camera="near:0.01;" position="0 1.65 0.15"></a-entity>
       <!-- hand controls -->

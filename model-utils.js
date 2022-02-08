@@ -105,7 +105,7 @@ AFRAME.registerComponent('no-tonemapping', {
     default: ''
   },
   init() {
-    this.el.addEventListener('object3dset', this.update.bind(this));
+    this.el.addEventListener('object3dset', this.update);
   },
   update() {
     const filters = this.data.trim().split(',');

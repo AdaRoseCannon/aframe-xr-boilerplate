@@ -97,7 +97,7 @@ AFRAME.registerComponent('window-replace', {
               depthWrite: false,
               map: m.map,
               transparent: true,
-              // side: THREE.DoubleSide,
+              side: THREE.DoubleSide,
               get envMap() {return sceneEl.object3D.environment},
               combine: THREE.MixOperation,
               reflectivity: 0.6,
