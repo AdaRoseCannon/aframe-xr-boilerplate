@@ -12,7 +12,7 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
       default: 0.5
     },
     height: {
-      default: 0
+      default: 1.6
     }
   },
 

@@ -96,9 +96,12 @@ AFRAME.registerSystem('exposure', {
     renderer.logarithmicDepthBuffer = true;
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  },
+  update () {
+    const renderer = this.el.renderer;
     renderer.toneMappingExposure = this.data;
   }
-})
+});
 
 AFRAME.registerComponent('no-tonemapping', {
   schema: {

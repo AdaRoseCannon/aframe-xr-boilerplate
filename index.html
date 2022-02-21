@@ -5,41 +5,32 @@
     // WebXR requires https: to work so ensure redirected if needed.
     if (location.hostname !== 'localhost' && window.location.protocol === 'http:') window.location.protocol = 'https:';
   </script>
-  <!-- the AFrame library -->
+
+  <!-- the AFrame library and 3rd party components -->
 	<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script>
-	<script src="https://unpkg.com/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
+  <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
+	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@1.3.1/build/handy-controls.min.js"></script>
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
   <script src="model-utils.js"></script>
+  
+  <!-- Our custom behaviour -->
 	<script src="main.js"></script>
-  <style>
-		body {
-			font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-		}
-    
-    #dom-overlay-message {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      padding: 1em;
-      background: #33333355;
-      border-top: 5px solid #ffffff55;
-      color: white;
-    }
-
-    .a-dom-overlay button {
-      padding: 1em;
-      appearance: none;
-      background: #00000055;
-      border: 3px solid white;
-      border-radius: 1em;
-      margin: 1em 1em 0 0;
-      color: white;
-    }
-  </style>  
+  
+  <title>AFrame Handy Demo</title>
+  <meta property="og:title" content="AFrame Handy Work Demo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@AdaRoseCannon" />
+  <meta name="twitter:creator" content="@AdaRoseCannon" />
+  <meta property="og:url" content="https://aframe-xr-starterkit.glitch.me/" />
+  <meta name="description" content="A sample scene for working with WebXR Hand Tracking" />
+  <meta property="og:description" content="A sample scene for working with WebXR Hand Tracking" />
+  <meta property="og:image" content="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/snapshot.png?v=1645201177438" />
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -47,21 +38,25 @@
 		webxr="overlayElement:#dom-overlay;"
 		background="color:skyblue;"
 		reflection="directionalLight:#dirlight;"
-		ar-hit-test="target:#my-objects;type:footprint;footprintDepth:0.2;"
+		ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
 		shadow="type: pcfsoft"
 		gltf-model="dracoDecoderPath: https://cdn.jsdelivr.net/npm/three@0.129.0/examples/js/libs/draco/gltf/;"
-    ar-cursor raycaster="objects: #my-objects *"
-    exposure=""
+    ar-cursor raycaster="objects: #my-ar-objects a-sphere"
+    exposure="2"
 	>
     <a-assets>
       <a-asset-item id="building-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
       <a-asset-item id="navmesh-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
+      <a-asset-item id="right-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-right-hand-webxr/model.gltf"></a-asset-item>
+      <a-asset-item id="left-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-left-hand-webxr/model.gltf"></a-asset-item>
+      <a-asset-item id="watch-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watch.glb?v=1645016979219"></a-asset-item>
+      <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/scimitar.glb?v=1645454049799"></a-asset-item>
       <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
-      <a-mixin ></a-mixin>
+      <a-mixin id="blink" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:#navmesh;"></a-mixin>
     </a-assets>
 
-    <a-entity position="-1 0 1" id="cameraRig">
+    <a-entity position="-1 0 1" origin-on-ar-start id="cameraRig">
       <!-- camera -->
       <a-entity id="head"
         camera="near:0.01;"
@@ -70,46 +65,82 @@
         wasd-controls="acceleration:30;"
         simple-navmesh-constraint="navmesh:#navmesh;fall:0.5;height:1.65;"
       ></a-entity>
-      <!-- hand controls -->
-      <a-entity 
-                hand-controls="hand:left"
-                id="left-hand"
-                blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:#navmesh;"
-      ></a-entity>
-      <a-entity 
-                hand-controls="hand:right"
-                id="right-hand"
-                blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:#navmesh;"
-      ></a-entity>
-    </a-entity>
 
-		<a-light id="dirlight" auto-shadow-cam intensity="0.4" light="castShadow:true;type:directional" position="10 10 10"></a-light>
-    <a-entity hide-on-enter-ar environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
-		<a-entity rotation="0 -45 0" position="0 0.2 0" hide-on-enter-ar>
-      <a-gltf-model id="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
-      <a-gltf-model src="#building-glb"
-        lightmap="src:#bake;intensity: 10; filter:Window,Ceiling,floor;"
-        depthwrite="true"
-        window-replace="Glass"
-        no-tonemapping="Light"
-      ></a-gltf-model>
+      <!-- Replace controllers with hand models -->
+      <a-entity  hand-controls="hand:left" id="left-hand" mixin="blink"></a-entity>
+      <a-entity  hand-controls="hand:right" id="right-hand" mixin="blink"></a-entity>
+      
+      <!-- Hand tracking -->
+      <a-entity handy-controls="right:#right-gltf;materialOverride:right;" material="color:gold;metalness:1;roughness:0;">
+        <a-gltf-model src="#watch-gltf" data-left="wrist" position="-1000 0 0">
+          <a-sphere radius="0.02" position="0 0.02 0" sphere-collider="radius:0.02;objects:[data-right$=-tip];" exit-on="hitend" visible="false"></a-sphere>
+          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
+        </a-gltf-model>
+        <a-entity data-right="wrist">
+          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
+        </a-entity>
+        <a-entity data-left="ring-finger-phalanx-proximal">
+          <a-torus position="0 0 -0.03" radius="0.008" radius-tubular="0.001" scale="1 1 1.5" material="color:gold;metalness:1;roughness:0;"></a-torus>
+        </a-entity>
+        
+        <a-entity data-right="index-finger-tip" mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
+        <a-entity data-left="index-finger-tip"  mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
+    
+        <a-entity data-right="grip">
+          <a-gltf-model src="#sword-gltf" scale="0.6,0.6,1"></a-gltf-model>
+        </a-entity>
+        
+        <!-- Invisible objects at the tips of each finger for physics or intersections -->
+        <a-sphere data-right="index-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-right="middle-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-right="ring-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-right="pinky-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-right="thumb-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-left="index-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-left="middle-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-left="ring-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-left="pinky-finger-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-left="thumb-tip" radius="0.01" visible="false"></a-sphere>
+      </a-entity>
+    </a-entity>
+      
+    <a-entity id="my-ar-objects" position="-6 0 1">
+      <!-- "Dusty Piano" (https://skfb.ly/66EPx) by Vincent074 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). -->
+      <a-gltf-model id="piano" rotation="0 100 0" shadow="recieve:false;cast:true;" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/piano.glb?v=1644414775118"></a-gltf-model>
     </a-entity>
 
     <!-- This plane is only visible in AR and follows the given target to provide it with shadows.-->
     <a-entity
       material="shader:shadow; depthWrite:false; opacity:0.9;"
-      visible="false"
       geometry="primitive:shadow-plane;"
+      visible="false"
       shadow="cast:false;receive:true;"
-      ar-shadow-helper="target:#my-objects;light:#dirlight;"
+      ar-shadow-helper="target:#my-ar-objects;light:#dirlight;"
+      position="0 0.25 0"
     ></a-entity>
+
+
+    <a-entity hide-on-enter-ar position="0 -0.2 0" environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
+		<a-entity rotation="0 -45 0" position="0 0 0" hide-on-enter-ar>
+      <a-gltf-model id="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
+      <a-gltf-model src="#building-glb"
+        lightmap="src:#bake;intensity: 1.5; filter:Window,Ceiling,floor;"
+        depthwrite="true"
+        window-replace="Glass"
+        no-tonemapping="Light"
+        shadow="cast:false;receive:true;"
+      ></a-gltf-model>
+    </a-entity>
+
+		<a-light id="dirlight" auto-shadow-cam intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
+
 	</a-scene>
 
 	<div id="dom-overlay">
     <h1>
       Hello World
     </h1>
-		<div id="dom-overlay-message">Enter AR to start.</div>
+		<div id="dom-overlay-message">Enter AR or VR to start.</div>
 	</div>
   
   <div class="glitchButton" style="position: absolute; top: 1em; right: 1em;"></div><script src="https://button.glitch.me/button.js"></script>

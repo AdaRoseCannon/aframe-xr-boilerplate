@@ -13,9 +13,45 @@ AFRAME.registerComponent("hide-on-hit-test-start", {
   }
 });
 
+AFRAME.registerComponent("origin-on-ar-start", {
+  init: function() {
+    var self = this.el;
+
+    this.el.sceneEl.addEventListener("enter-vr", function() {
+      if (this.is("ar-mode")) {
+        self.setAttribute('position', {x:0,y:0,z:0});
+        self.setAttribute('rotation', {x:0,y:0,z:0});
+      }
+    });
+  }
+});
+
+AFRAME.registerComponent("exit-on", {
+  schema: {
+    default: 'click'
+  },
+  update(oldEvent) {
+    const newEvent = this.data;
+    this.el.removeEventListener(oldEvent, this.exitVR);
+    this.el.addEventListener(newEvent, this.exitVR);
+  },
+  exitVR() {
+    this.sceneEl.exitVR();
+  }
+});
+
 window.addEventListener("DOMContentLoaded", function() {
   const sceneEl = document.querySelector("a-scene");
   const message = document.getElementById("dom-overlay-message");
+  const arContainerEl = document.getElementById("my-ar-objects");
+  const cameraRig = document.getElementById("cameraRig");
+  
+  const labels = Array.from(document.querySelectorAll('.pose-label'));
+  for (const el of labels) {
+    el.parentNode.addEventListener('pose', function (event) {
+      el.setAttribute('text', 'value', event.detail.pose);
+    });
+  }
   
   sceneEl.addEventListener('object3dset', function () {
     if (this.components && this.components.reflection) this.components.reflection.needsVREnvironmentUpdate = true;
