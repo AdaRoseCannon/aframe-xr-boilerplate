@@ -26,6 +26,20 @@ AFRAME.registerComponent("origin-on-ar-start", {
   }
 });
 
+AFRAME.registerComponent("xr-follow", {
+  schema: {},
+  init() {
+  },
+  tick() {
+    const scene = this.el.sceneEl;
+    const cameraObject = scene.camera;
+    const camera = scene.is('vr-mode') ? scene.renderer.xr.getCamera(cameraObject) : cameraObject;
+    const object3D = this.el.object3D;
+    camera.getWorldPosition(object3D.position);
+    object3D.parent.worldToLocal(object3D.position);
+  }
+});
+
 AFRAME.registerComponent("exit-on", {
   schema: {
     default: 'click'
@@ -51,7 +65,35 @@ window.addEventListener("DOMContentLoaded", function() {
     el.parentNode.addEventListener('pose', function (event) {
       el.setAttribute('text', 'value', event.detail.pose);
     });
+    el.parentNode.addEventListener('gamepad', function (event) {
+      el.setAttribute('text', 'value', event.detail.event);
+    });
   }
+  
+  const watergun = document.getElementById("watergun");
+  const watergunSlider = watergun.firstElementChild;
+  watergun.addEventListener('grabbed', function (e) {
+    const by = e.detail.by;
+    if (e.target === watergun) {
+      if (by.dataset.right) watergunSlider.className = 'magnet-left';
+      if (by.dataset.left) watergunSlider.className = 'magnet-right';
+    }
+    if (e.target === watergunSlider) {
+      if (by.dataset.right) watergun.setAttribute('linear-constraint', 'target', '#right-no-magnet');
+      if (by.dataset.left) watergun.setAttribute('linear-constraint', 'target', '#left-no-magnet');
+    }
+  });
+  watergun.addEventListener('released', function (e) {
+    const by = e.detail.by;
+    if (e.target === watergun) {
+      watergunSlider.className = '';
+      watergun.setAttribute('linear-constraint', 'target', '');
+    }
+    if (e.target === watergunSlider) {
+      watergun.setAttribute('linear-constraint', 'target', '');
+    }
+  });
+  
   
   sceneEl.addEventListener('object3dset', function () {
     if (this.components && this.components.reflection) this.components.reflection.needsVREnvironmentUpdate = true;

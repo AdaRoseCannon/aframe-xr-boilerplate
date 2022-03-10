@@ -12,11 +12,13 @@
 	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
   <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
 	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work/build/handy-controls.min.js"></script>
+<!--   <script src="https://cdn.jsdelivr.net/npm/handy-work@1.5.0/build/handy-controls.min.js"></script> -->
+  <script src="handy-controls.js"></script>
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
   <script src="model-utils.js"></script>
+  <script src="magnet-helpers.js"></script>
   
   <!-- Our custom behaviour -->
 	<script src="main.js"></script>
@@ -51,12 +53,13 @@
       <a-asset-item id="left-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-left-hand-webxr/model.gltf"></a-asset-item>
       <a-asset-item id="watch-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watch.glb?v=1645016979219"></a-asset-item>
       <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/scimitar.glb?v=1645454049799"></a-asset-item>
+      <a-asset-item id="watergun-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watergun.glb?v=1646916260646"></a-asset-item>
       <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700" crossorigin="anonymous">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
       <a-mixin id="blink" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:#navmesh;"></a-mixin>
     </a-assets>
 
-    <a-entity position="-1 0 1" origin-on-ar-start id="cameraRig">
+    <a-entity position="-1 0 1" rotation="0 45 0" origin-on-ar-start id="cameraRig">
       <!-- camera -->
       <a-entity id="head"
         camera="near:0.01;"
@@ -65,18 +68,27 @@
         wasd-controls="acceleration:30;"
         simple-navmesh-constraint="navmesh:#navmesh;fall:0.5;height:1.65;"
       ></a-entity>
-
-      <!-- Replace controllers with hand models -->
-      <a-entity  hand-controls="hand:left" id="left-hand" mixin="blink"></a-entity>
-      <a-entity  hand-controls="hand:right" id="right-hand" mixin="blink"></a-entity>
+      
+      <a-entity xr-follow>
+        <a-gltf-model data-pick-up id="sword" src="#sword-gltf" class="magnet" scale="0.6,0.6,1" position="-0.2 -0.4 -0.2" rotation="-30 180 0"></a-gltf-model>
+        <a-gltf-model data-pick-up id="watergun" src="#watergun-gltf" class="magnet" position="0.2 -0.4 -0.2" rotation="30 180 0" linear-constraint="axis:0 1 0;min:-0.15;max:0;part:Slider;">
+          <a-box id="watergun-slider-magnet" shadow width="0.05" height="0.05" depth="0.2" rotation="-74 0 0" attach-to-model="Slider" visible="false"></a-box>
+        </a-gltf-model>
+      </a-entity>
       
       <!-- Hand tracking -->
       <a-entity handy-controls="right:#right-gltf;materialOverride:right;" material="color:gold;metalness:1;roughness:0;">
+        <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:blue" data-none="screen-0"></a-torus>
+        <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:green" data-none="screen-1"></a-torus>
+        <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:red" data-none="screen-2"></a-torus>
+        
         <a-gltf-model src="#watch-gltf" data-left="wrist" position="-1000 0 0">
           <a-sphere radius="0.02" position="0 0.02 0" sphere-collider="radius:0.02;objects:[data-right$=-tip];" exit-on="hitend" visible="false"></a-sphere>
-          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-gltf-model>
-        <a-entity data-right="wrist">
+        <a-entity data-right="ray" mixin="blink" blink-controls>
+          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
+        </a-entity>
+        <a-entity data-left="ray" mixin="blink" blink-controls>
           <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-entity>
         <a-entity data-left="ring-finger-phalanx-proximal">
@@ -85,10 +97,14 @@
         
         <a-entity data-right="index-finger-tip" mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
         <a-entity data-left="index-finger-tip"  mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
+        
+        <!-- These get drawn towards grabable objects, moving the whole hand and the attached elements-->
+        <a-entity data-right="grip" data-magnet=".magnet-right:not([data-no-magnet]),.magnet:not([data-no-magnet])" grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
+        <a-entity data-left="grip"  data-magnet=".magnet-left:not([data-no-magnet]),.magnet:not([data-no-magnet])"  grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
     
-        <a-entity data-right="grip">
-          <a-gltf-model src="#sword-gltf" scale="0.6,0.6,1"></a-gltf-model>
-        </a-entity>
+        <!-- markers to let us know the real location of the hands -->
+        <a-sphere id="right-no-magnet" data-right="grip" data-no-magnet radius="0.01" color="red"></a-sphere>
+        <a-sphere id="left-no-magnet" data-left="grip" data-no-magnet radius="0.01" color="red"></a-sphere>
         
         <!-- Invisible objects at the tips of each finger for physics or intersections -->
         <a-sphere data-right="index-finger-tip" radius="0.01" visible="false"></a-sphere>
@@ -103,6 +119,11 @@
         <a-sphere data-left="thumb-tip" radius="0.01" visible="false"></a-sphere>
       </a-entity>
     </a-entity>
+    
+    <a-box shadow width="0.2" height="0.2" depth="0.2" position="-2 0.1 0" rotation="0 30 0">
+      <a-box shadow width="0.05" height="0.05" depth="0.2" class="magnet-right" linear-constraint="axis:0 1 0;min:0.15;max:1;target:#right-no-magnet;"></a-box>
+      <a-box shadow width="0.05" height="0.05" depth="0.2" class="magnet-left" linear-constraint="axis:0 1 0;min:0.15;max:1;target:#left-no-magnet;"></a-box>
+    </a-box>
       
     <a-entity id="my-ar-objects" position="-6 0 1">
       <!-- "Dusty Piano" (https://skfb.ly/66EPx) by Vincent074 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). -->
