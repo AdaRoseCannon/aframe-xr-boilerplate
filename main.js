@@ -1,5 +1,5 @@
 /* jshint esversion: 9 */
-/* global THREE, AFRAME */
+/* global THREE, AFRAME, Ammo */
 
 AFRAME.registerComponent("hide-on-hit-test-start", {
   init: function() {
@@ -54,11 +54,80 @@ AFRAME.registerComponent("exit-on", {
   }
 });
 
+AFRAME.registerComponent("ammo-shape-from-model", {
+  schema: {
+    type: 'string',
+    default: ''
+  },
+  init () {
+    const details = this.data;
+    this.onLoad = function () {
+      this.setAttribute('ammo-shape', details);
+      this.removeAttribute('ammo-shape-from-model');
+    }
+    this.el.addEventListener('object3dset', this.onLoad);
+  },
+  remove () {
+    this.el.removeEventListener('object3dset', this.onLoad);
+  }
+});
+AFRAME.registerComponent("ammo-body-from-model", {
+  schema: {
+    type: 'string',
+    default: ''
+  },
+  init () {
+    const details = this.data;
+    this.onLoad = function () {
+      this.setAttribute('ammo-body', details);
+      this.removeAttribute('ammo-body-from-model');
+    }
+    this.el.addEventListener('object3dset', this.onLoad);
+  },
+  remove () {
+    this.el.removeEventListener('object3dset', this.onLoad);
+  }
+});
+
+
+AFRAME.registerComponent("toggle-physics", {
+  init () {
+    this.onPickup = function () { this.setAttribute('ammo-body', 'type', 'kinematic'); }
+    this.onPutDown = function (e) {
+      this.setAttribute('ammo-body', 'type', 'dynamic');
+      if (e.detail.frame && e.detail.inputSource) {
+        const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace);
+        if (pose.angularVelocity) {
+          const velocity = new Ammo.btVector3(pose.angularVelocity.x,pose.angularVelocity.y,pose.angularVelocity.z);
+          this.el.body.setAngularVelocity(velocity);
+          Ammo.destroy(velocity);
+        }
+        if (pose.linearVelocity) {
+          const velocity = new Ammo.btVector3(pose.linearVelocity.x,pose.linearVelocity.y,pose.linearVelocity.z);
+          this.el.body.setLinearVelocity(velocity);
+          Ammo.destroy(velocity);
+        }
+      }
+    }
+    this.el.addEventListener('pickup', this.onPickup);
+    this.el.addEventListener('putdown', this.onPutDown);
+  },
+  remove () {
+    this.el.removeEventListener('pickup', this.onPickup);
+    this.el.removeEventListener('putdown', this.onPutDown);
+  }
+});
+
 window.addEventListener("DOMContentLoaded", function() {
   const sceneEl = document.querySelector("a-scene");
   const message = document.getElementById("dom-overlay-message");
   const arContainerEl = document.getElementById("my-ar-objects");
   const cameraRig = document.getElementById("cameraRig");
+  const building = document.getElementById("building");
+  
+  building.addEventListener('object3dset', function () {
+    if (this.components && this.components.reflection) this.components.reflection.needsVREnvironmentUpdate = true;
+  }, {once: true});
   
   const labels = Array.from(document.querySelectorAll('.pose-label'));
   for (const el of labels) {
@@ -92,11 +161,6 @@ window.addEventListener("DOMContentLoaded", function() {
     if (e.target === watergunSlider) {
       watergun.setAttribute('linear-constraint', 'target', '');
     }
-  });
-  
-  
-  sceneEl.addEventListener('object3dset', function () {
-    if (this.components && this.components.reflection) this.components.reflection.needsVREnvironmentUpdate = true;
   });
 
   // If the user taps on any buttons or interactive elements we may add then prevent

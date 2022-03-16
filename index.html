@@ -12,13 +12,16 @@
 	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
   <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
 	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
-<!--   <script src="https://cdn.jsdelivr.net/npm/handy-work@1.5.0/build/handy-controls.min.js"></script> -->
-  <script src="handy-controls.js"></script>
+  <script src="https://mixedreality.mozilla.org/ammo.js/builds/ammo.wasm.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.0/build/handy-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.0/build/magnet-helpers.min.js"></script>
+<!--   <script src="handy-controls.js"></script> -->
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
   <script src="model-utils.js"></script>
-  <script src="magnet-helpers.js"></script>
+<!--   <script src="magnet-helpers.js"></script> -->
   
   <!-- Our custom behaviour -->
 	<script src="main.js"></script>
@@ -37,6 +40,7 @@
 
 <body>
 	<a-scene
+    physics="driver: ammo; debug: false; debugDrawMode: 1;"
 		webxr="overlayElement:#dom-overlay;"
 		background="color:skyblue;"
 		reflection="directionalLight:#dirlight;"
@@ -54,9 +58,13 @@
       <a-asset-item id="watch-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watch.glb?v=1645016979219"></a-asset-item>
       <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/scimitar.glb?v=1645454049799"></a-asset-item>
       <a-asset-item id="watergun-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watergun.glb?v=1646916260646"></a-asset-item>
+      <a-asset-item id="stew-gltf" src="https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/pot-stew/model.gltf"></a-asset-item>
+      <a-asset-item id="table-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/small_wooden_table_01_1k-v1.glb?v=1647263187998"></a-asset-item>
+      <a-asset-item id="clock-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/vintage_grandfather_clock_01_1k-v2.glb?v=1647265174189"></a-asset-item>
       <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700" crossorigin="anonymous">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
-      <a-mixin id="blink" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:#navmesh;"></a-mixin>
+      <a-mixin id="blink" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:.navmesh;"></a-mixin>
+      <a-mixin id="handle-visual" geometry="width:0.05;height:0.05;depth:0.2" visible="false"></a-mixin>
     </a-assets>
 
     <a-entity position="-1 0 1" rotation="0 45 0" origin-on-ar-start id="cameraRig">
@@ -66,71 +74,88 @@
         look-controls="pointerLockEnabled: false"
         position="0 1.65 0"
         wasd-controls="acceleration:30;"
-        simple-navmesh-constraint="navmesh:#navmesh;fall:0.5;height:1.65;"
+        simple-navmesh-constraint="navmesh:.navmesh;fall:0.5;height:1.65;exclude:.exclude;"
       ></a-entity>
       
       <a-entity xr-follow>
-        <a-gltf-model data-pick-up id="sword" src="#sword-gltf" class="magnet" scale="0.6,0.6,1" position="-0.2 -0.4 -0.2" rotation="-30 180 0"></a-gltf-model>
-        <a-gltf-model data-pick-up id="watergun" src="#watergun-gltf" class="magnet" position="0.2 -0.4 -0.2" rotation="30 180 0" linear-constraint="axis:0 1 0;min:-0.15;max:0;part:Slider;">
-          <a-box id="watergun-slider-magnet" shadow width="0.05" height="0.05" depth="0.2" rotation="-74 0 0" attach-to-model="Slider" visible="false"></a-box>
+        <a-gltf-model id="sword" src="#sword-gltf" shadow="receive:false;"
+                      ammo-body-from-model="type: kinematic;" ammo-shape-from-model="type:hull;offset:0 0 -0.25;"
+                      data-pick-up class="magnet-left magnet-right"
+                      position="-0.2 -0.4 0" rotation="-30 180 0" scale="0.6,0.6,1"
+                      animation__restore_position="startEvents:putdown;pauseEvents:pickup;property:position;to:-0.2 -0.4 -0.2;easing:easeOutBack;"
+                      animation__restore_rotation="startEvents:putdown;pauseEvents:pickup;property:rotation;to:-30 180 0;easing:easeOutBack;"
+        ></a-gltf-model>
+        <a-gltf-model shadow="receive:false;" id="watergun" src="#watergun-gltf"
+                      ammo-body-from-model="type: kinematic;" ammo-shape-from-model="type: hull;offset:0 -0.1 -0.1;"
+                      class="magnet-left magnet-right" data-pick-up 
+                      position="0.2 -0.4 0" rotation="30 180 0" linear-constraint="axis:0 1 0;min:-0.15;max:0;part:Slider;"
+                      animation__restore_position="startEvents:putdown;pauseEvents:pickup;property:position;to:0.2 -0.4 -0.2;easing:easeOutBack;"
+                      animation__restore_rotation="startEvents:putdown;pauseEvents:pickup;property:rotation;to:30 180 0;easing:easeOutBack;"
+        >
+          <a-entity id="watergun-slider-magnet" mixin="handle-visual" rotation="-74 0 0" attach-to-model="Slider"></a-entity>
         </a-gltf-model>
       </a-entity>
       
       <!-- Hand tracking -->
       <a-entity handy-controls="right:#right-gltf;materialOverride:right;" material="color:gold;metalness:1;roughness:0;">
+        
+        <!-- For screen space inputs like mobile AR -->
         <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:blue" data-none="screen-0"></a-torus>
         <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:green" data-none="screen-1"></a-torus>
         <a-torus radius="0.008" radius-tubular="0.001" material="shader:flat;color:red" data-none="screen-2"></a-torus>
         
+        <!-- Put an exit button on the wrist for handtracking -->
         <a-gltf-model src="#watch-gltf" data-left="wrist" position="-1000 0 0">
           <a-sphere radius="0.02" position="0 0.02 0" sphere-collider="radius:0.02;objects:[data-right$=-tip];" exit-on="hitend" visible="false"></a-sphere>
         </a-gltf-model>
-        <a-entity data-right="ray" mixin="blink" blink-controls>
-          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
-        </a-entity>
-        <a-entity data-left="ray" mixin="blink" blink-controls>
-          <a-entity position="0 0 -0.22" class="pose-label" text="value: Hello World; align: center;"></a-entity>
-        </a-entity>
+        
+        <!-- Add a golden ring on the finger -->
         <a-entity data-left="ring-finger-phalanx-proximal">
           <a-torus position="0 0 -0.03" radius="0.008" radius-tubular="0.001" scale="1 1 1.5" material="color:gold;metalness:1;roughness:0;"></a-torus>
         </a-entity>
         
+        <!-- Use the finger tips for teleporting when the user points -->
         <a-entity data-right="index-finger-tip" mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
         <a-entity data-left="index-finger-tip"  mixin="blink" blink-controls="rotateOnTeleport:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;"></a-entity>
         
+        <!-- The direction hands are facing, we will also attach labels to show the currently detected pose or controller button -->
+        <!-- These also do teleportaion for Blink controls in VR -->
+        <a-entity data-right="ray" mixin="blink" blink-controls>
+          <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
+        </a-entity>
+        <a-entity data-left="ray" mixin="blink" blink-controls>
+          <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
+        </a-entity>
+        
         <!-- These get drawn towards grabable objects, moving the whole hand and the attached elements-->
-        <a-entity data-right="grip" data-magnet=".magnet-right:not([data-no-magnet]),.magnet:not([data-no-magnet])" grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
-        <a-entity data-left="grip"  data-magnet=".magnet-left:not([data-no-magnet]),.magnet:not([data-no-magnet])"  grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
+        <a-entity id="right-magnet" data-right="grip" data-magnet="magnet-right" grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
+        <a-entity id="left-magnet" data-left="grip"  data-magnet="magnet-left"  grab-magnet-target="startEvents:squeezestart,pose_fist;stopEvents:pose_flat_fuseShort,squeezeend;"></a-entity>
     
-        <!-- markers to let us know the real location of the hands -->
+        <!-- markers to let us know the real location of the hands, you probably want to make them visible="false" or just make them empty <a-entities> -->
         <a-sphere id="right-no-magnet" data-right="grip" data-no-magnet radius="0.01" color="red"></a-sphere>
         <a-sphere id="left-no-magnet" data-left="grip" data-no-magnet radius="0.01" color="red"></a-sphere>
         
         <!-- Invisible objects at the tips of each finger for physics or intersections -->
-        <a-sphere data-right="index-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-right="middle-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-right="ring-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-right="pinky-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-right="thumb-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-left="index-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-left="middle-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-left="ring-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-left="pinky-finger-tip" radius="0.01" visible="false"></a-sphere>
-        <a-sphere data-left="thumb-tip" radius="0.01" visible="false"></a-sphere>
+        <a-sphere data-right="index-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-right="middle-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-right="ring-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-right="pinky-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-right="thumb-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-left="index-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-left="middle-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-left="ring-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-left="pinky-finger-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
+        <a-sphere data-left="thumb-tip" radius="0.004" visible="false" ammo-body="type: kinematic;" ammo-shape="type:sphere;"></a-sphere>
       </a-entity>
     </a-entity>
     
-    <a-box shadow width="0.2" height="0.2" depth="0.2" position="-2 0.1 0" rotation="0 30 0">
-      <a-box shadow width="0.05" height="0.05" depth="0.2" class="magnet-right" linear-constraint="axis:0 1 0;min:0.15;max:1;target:#right-no-magnet;"></a-box>
-      <a-box shadow width="0.05" height="0.05" depth="0.2" class="magnet-left" linear-constraint="axis:0 1 0;min:0.15;max:1;target:#left-no-magnet;"></a-box>
-    </a-box>
-      
     <a-entity id="my-ar-objects" position="-6 0 1">
       <!-- "Dusty Piano" (https://skfb.ly/66EPx) by Vincent074 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). -->
       <a-gltf-model id="piano" rotation="0 100 0" shadow="receive:false;cast:true;" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/piano.glb?v=1644414775118"></a-gltf-model>
     </a-entity>
 
     <!-- This plane is only visible in AR and follows the given target to provide it with shadows.-->
+		<a-light id="dirlight" auto-shadow-cam="targets:[ar-shadow-helper],#table;" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
     <a-entity
       material="shader:shadow; depthWrite:false; opacity:0.9;"
       geometry="primitive:shadow-plane;"
@@ -143,8 +168,23 @@
 
     <a-entity hide-on-enter-ar position="0 -0.2 0" environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
 		<a-entity rotation="0 -45 0" position="0 0 0" hide-on-enter-ar>
-      <a-gltf-model id="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
+      <a-box 
+        position="-5.148 -0.1 -0.355"
+        visible="false"
+        geometry="width:33.67;height:0.2;depth:19.06"
+        ammo-body="type: static;"
+        ammo-shape="type: box"
+        ammo-restitution="1.5">
+      </a-box>
+      <a-gltf-model id="pot" toggle-physics shadow="receive:false;" src="#stew-gltf" position="-2 1.2 0.8" ammo-body-from-model="type:dynamic;mass:2;" ammo-shape-from-model="type:cylinder;offset:0 0.2 0;">
+        <a-entity id="stew-handle-1" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 -0.35" rotation="0 90 0"></a-entity>
+        <a-entity id="stew-handle-2" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 0.35" rotation="0 90 0"></a-entity>
+      </a-gltf-model>
+      <a-gltf-model id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5"></a-gltf-model>
+      <a-gltf-model id="clock" shadow="receive:true;" src="#clock-gltf" position="-5 0 1.8" rotation="0 51 0" ammo-body-from-model="type:dynamic;mass:15;" ammo-shape-from-model="type: box;offset:0 1.1 0;" ammo-restitution="1.5"></a-gltf-model>
+      <a-gltf-model class="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
       <a-gltf-model src="#building-glb"
+        id="building"
         lightmap="src:#bake;intensity: 1.5; filter:Window,Ceiling,floor;"
         depthwrite="true"
         window-replace="Glass"
@@ -153,7 +193,6 @@
       ></a-gltf-model>
     </a-entity>
 
-		<a-light id="dirlight" auto-shadow-cam intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
 
 	</a-scene>
 
