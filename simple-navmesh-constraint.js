@@ -18,13 +18,9 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
       default: ''
     }
   },
-
-  init: function () {
-    this.lastPosition = new THREE.Vector3();
-    this.el.object3D.getWorldPosition(this.lastPosition);
-  },
   
   update: function () {
+    this.lastPosition = null;
     this.excludes = this.data.exclude ? Array.from(document.querySelectorAll(this.data.exclude)):[];
     const els = Array.from(document.querySelectorAll(this.data.navmesh));
     if (els === null) {
@@ -54,7 +50,12 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     const results = [];
     let yVel = 0;
     
-    return function (time, delta) {
+    return function tick(time, delta) {
+      if (this.lastPosition === null) {
+        this.lastPosition = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(this.lastPosition);
+      }
+      
       const el = this.el;
       if (this.objects.length === 0) return;
 
