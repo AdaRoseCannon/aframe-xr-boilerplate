@@ -77,11 +77,15 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
         raycaster.far = this.data.fall > 0 ? this.data.fall + maxYVelocity : Infinity;
         raycaster.intersectObjects(this.objects, true, results);
         if (results.length) {
-          // If it hit something we want to avoid then ignore it and continue
+          // If it hit something we want to avoid then ignore it and stop looking
           for (const result of results) {
-            if(this.excludes.includes(result.object.el)) continue scanPatternLoop;
+            if(this.excludes.includes(result.object.el)) {
+              results.splice(0);
+              continue scanPatternLoop;
+            }
           }
           const hitPos = results[0].point;
+          results.splice(0);
           hitPos.y += this.data.height;
           if (nextPosition.y - (hitPos.y - yVel*2) > 0.01) {
             yVel += Math.max(gravity * delta * 0.001, -maxYVelocity);
@@ -92,7 +96,6 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
           el.object3D.position.copy(hitPos);
           this.el.object3D.parent.worldToLocal(this.el.object3D.position);
           this.lastPosition.copy(hitPos);
-          results.splice(0);
           didHit = true;
           break;
         }

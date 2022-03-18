@@ -67,13 +67,13 @@
       <a-mixin id="handle-visual" geometry="width:0.05;height:0.05;depth:0.2" visible="false"></a-mixin>
     </a-assets>
 
-    <a-entity position="-10 0 -10" rotation="0 45 0" origin-on-ar-start id="cameraRig">
+    <a-entity position="-1 0 1" rotation="0 45 0" origin-on-ar-start id="cameraRig">
       <!-- camera -->
       <a-entity id="head"
         camera="near:0.01;"
         look-controls="pointerLockEnabled: false"
         position="0 1.65 0"
-        wasd-controls="acceleration:30;"
+        wasd-controls="acceleration:10;"
         simple-navmesh-constraint="navmesh:.navmesh;fall:0.5;height:1.65;exclude:.exclude;"
       ></a-entity>
       
@@ -180,7 +180,7 @@
         <a-entity id="stew-handle-1" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 -0.35" rotation="0 90 0"></a-entity>
         <a-entity id="stew-handle-2" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 0.35" rotation="0 90 0"></a-entity>
       </a-gltf-model>
-      <a-gltf-model id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5"></a-gltf-model>
+      <a-gltf-model class="exclude" id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5"></a-gltf-model>
       <a-gltf-model id="clock" shadow="receive:true;" src="#clock-gltf" position="-5 0 1.8" rotation="0 51 0" ammo-body-from-model="type:dynamic;mass:15;" ammo-shape-from-model="type: box;offset:0 1.1 0;" ammo-restitution="1.5"></a-gltf-model>
       <a-gltf-model class="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
       <a-gltf-model src="#building-glb"
