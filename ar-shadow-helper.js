@@ -1,11 +1,11 @@
 /* global AFRAME, THREE */
+
+
 (function () {
 "use strict";
 
 const bbox = new THREE.Box3();
 const normal = new THREE.Vector3();
-const cameraWorldPosition = new THREE.Vector3();
-const tempMat = new THREE.Matrix4();
 const sphere = new THREE.Sphere();
 const zeroVector = new THREE.Vector3();
 const planeVector = new THREE.Vector3();
@@ -27,59 +27,6 @@ function nearestPointInPlane(positionOnPlane, planeNormal, p1, out) {
 	out.add(p1);
 	return out;
 }
-
-AFRAME.registerGeometry('shadow-plane', {
-  schema: {
-    width: { default: 1, min: 0 },
-    height: { default: 1, min: 0 }
-  },
-
-  init: function (data) {
-    this.geometry = new THREE.PlaneGeometry(data.width, data.height);
-    this.geometry.rotateX(-Math.PI / 2);
-  }
-});
-
-/**
-  Automatically adjust the view frustum to cover the objects in the scene
-*/
-AFRAME.registerComponent('auto-shadow-cam', {
-  schema: {
-    targets: {
-      type: 'selectorAll',
-      default: "[ar-shadow-helper]"
-    },
-  },
-  tick() {
-    const camera = this.el.components.light?.light?.shadow?.camera;
-    if (!camera || !this.data.targets.length) return;
-
-    camera.getWorldDirection(normal);
-    camera.getWorldPosition(cameraWorldPosition);
-    tempMat.copy(camera.matrixWorld);
-    tempMat.invert();
-
-    camera.near    = 1;
-    camera.left    = 100000;
-    camera.right   = -100000;
-    camera.top     = -100000;
-    camera.bottom  = 100000;
-    for (const el of this.data.targets) {
-      bbox.setFromObject(el.object3D);
-      bbox.getBoundingSphere(sphere);
-      const distanceToPlane = distanceOfPointFromPlane(cameraWorldPosition, normal, sphere.center);
-      const pointOnCameraPlane = nearestPointInPlane(cameraWorldPosition, normal, sphere.center, tempVector);
-
-      const pointInXYPlane = pointOnCameraPlane.applyMatrix4(tempMat);
-      camera.near    = Math.min(-distanceToPlane - sphere.radius - 1, camera.near);
-      camera.left    = Math.min(-sphere.radius + pointInXYPlane.x, camera.left);
-      camera.right   = Math.max( sphere.radius + pointInXYPlane.x, camera.right);
-      camera.top     = Math.max( sphere.radius + pointInXYPlane.y, camera.top);
-      camera.bottom  = Math.min(-sphere.radius + pointInXYPlane.y, camera.bottom);
-    }
-    camera.updateProjectionMatrix();
-  }
-});
   
 /**
 It also attatches itself to objects and resizes and positions itself to get the most shadow

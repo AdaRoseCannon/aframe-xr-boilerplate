@@ -7,15 +7,16 @@
   </script>
 
   <!-- the AFrame library and 3rd party components -->
-	<script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@0d23f9b21c33ab6821046ce95835492cb84996c5/dist/aframe-master.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls/dist/aframe-blink-controls.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
   <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
 	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
   <script src="https://mixedreality.mozilla.org/ammo.js/builds/ammo.wasm.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.0/build/handy-controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.0/build/magnet-helpers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.3/build/handy-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.0.3/build/magnet-helpers.min.js"></script>
+<!--   <script src="https://unpkg.com/aframe-inspector@1.3.x/dist/aframe-inspector.min.js"></script> -->
 <!--   <script src="handy-controls.js"></script> -->
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
@@ -44,11 +45,11 @@
 		webxr="overlayElement:#dom-overlay;"
 		background="color:skyblue;"
 		reflection="directionalLight:#dirlight;"
+    renderer="physicallyCorrectLights:true;colorManagement:true;exposure:1;toneMapping:ACESFilmic;"
 		ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
 		shadow="type: pcfsoft"
 		gltf-model="dracoDecoderPath: https://cdn.jsdelivr.net/npm/three@0.129.0/examples/js/libs/draco/gltf/;"
     ar-cursor raycaster="objects: #my-ar-objects a-sphere"
-    exposure="2"
 	>
     <a-assets>
       <a-asset-item id="building-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
@@ -56,15 +57,16 @@
       <a-asset-item id="right-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-right-hand-webxr/model.gltf"></a-asset-item>
       <a-asset-item id="left-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-left-hand-webxr/model.gltf"></a-asset-item>
       <a-asset-item id="watch-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watch.glb?v=1645016979219"></a-asset-item>
-      <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/scimitar.glb?v=1645454049799"></a-asset-item>
+      <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/katana.glb?v=1648465043810"></a-asset-item>
       <a-asset-item id="watergun-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watergun.glb?v=1646916260646"></a-asset-item>
       <a-asset-item id="stew-gltf" src="https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/pot-stew/model.gltf"></a-asset-item>
       <a-asset-item id="table-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/small_wooden_table_01_1k-v1.glb?v=1647263187998"></a-asset-item>
       <a-asset-item id="clock-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/vintage_grandfather_clock_01_1k-v2.glb?v=1647265174189"></a-asset-item>
+      <a-asset-item id="ladder-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/ladder.glb?v=1648465045608"></a-asset-item>
       <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700" crossorigin="anonymous">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
       <a-mixin id="blink" blink-controls="cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:.navmesh;"></a-mixin>
-      <a-mixin id="handle-visual" geometry="width:0.05;height:0.05;depth:0.2" visible="false"></a-mixin>
+      <a-mixin id="handle-visual" geometry="width:0.05;height:0.05;depth:0.2"></a-mixin>
     </a-assets>
 
     <a-entity position="-1 0 1" rotation="0 45 0" origin-on-ar-start id="cameraRig">
@@ -79,12 +81,13 @@
       
       <a-entity xr-follow>
         <a-gltf-model id="sword" src="#sword-gltf" shadow="receive:false;"
-                      ammo-body-from-model="type: kinematic;" ammo-shape-from-model="type:hull;offset:0 0 -0.25;"
                       data-pick-up class="magnet-left magnet-right"
                       position="-0.2 -0.4 0" rotation="-30 180 0" scale="0.6,0.6,1"
                       animation__restore_position="startEvents:putdown;pauseEvents:pickup;property:position;to:-0.2 -0.4 -0.2;easing:easeOutBack;"
                       animation__restore_rotation="startEvents:putdown;pauseEvents:pickup;property:rotation;to:-30 180 0;easing:easeOutBack;"
-        ></a-gltf-model>
+        >
+          <a-box ammo-body="type: kinematic;" ammo-shape="type:box;" width="0.03" height="0.03" depth="0.790" rotation="-16 0 0" position="0 -0.062 -0.331" visible="false"></a-box>
+        </a-gltf-model>
         <a-gltf-model shadow="receive:false;" id="watergun" src="#watergun-gltf"
                       ammo-body-from-model="type: kinematic;" ammo-shape-from-model="type: hull;offset:0 -0.1 -0.1;"
                       class="magnet-left magnet-right" data-pick-up 
@@ -92,7 +95,7 @@
                       animation__restore_position="startEvents:putdown;pauseEvents:pickup;property:position;to:0.2 -0.4 -0.2;easing:easeOutBack;"
                       animation__restore_rotation="startEvents:putdown;pauseEvents:pickup;property:rotation;to:30 180 0;easing:easeOutBack;"
         >
-          <a-entity id="watergun-slider-magnet" mixin="handle-visual" rotation="-74 0 0" attach-to-model="Slider"></a-entity>
+          <a-entity id="watergun-slider-magnet" rotation="-74 0 0" attach-to-model="Slider"></a-entity>
         </a-gltf-model>
       </a-entity>
       
@@ -157,19 +160,13 @@
     </a-entity>
 
     <!-- This plane is only visible in AR and follows the given target to provide it with shadows.-->
-		<a-light id="dirlight" auto-shadow-cam="targets:[ar-shadow-helper],#table;" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
-    <a-entity
-      material="shader:shadow; depthWrite:false; opacity:0.9;"
-      geometry="primitive:shadow-plane;"
-      visible="false"
-      shadow="cast:false;receive:true;"
-      ar-shadow-helper="target:#my-ar-objects;light:#dirlight;"
-      position="0 0.25 0"
-    ></a-entity>
-
+		<a-light id="dirlight" shadow-camera-automatic="[ar-shadow-helper],#table,#ladder" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
+    <a-entity ar-shadow-helper="target:#my-ar-objects;light:#dirlight;" visible="false">
+      <a-plane rotation="-90 0 0" shadow="cast:false;receive:true;" position="0 0.01 0" material="shader:shadow; depthWrite:false; opacity:0.9;"></a-plane>
+    </a-entity>
 
     <a-entity hide-on-enter-ar position="0 -0.2 0" environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
-		<a-entity rotation="0 -45 0" position="0 0 0" hide-on-enter-ar>
+		<a-entity rotation="0 -50 0" position="0 0 0" hide-on-enter-ar>
       <a-box 
         position="-5.148 -0.1 -0.355"
         visible="false"
@@ -179,12 +176,23 @@
         ammo-restitution="1.5">
       </a-box>
       <a-gltf-model id="pot" toggle-physics shadow="receive:false;" src="#stew-gltf" position="-2 1.2 0.8" ammo-body-from-model="type:dynamic;mass:2;" ammo-shape-from-model="type:cylinder;offset:0 0.2 0;">
-        <a-entity id="stew-handle-1" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 -0.35" rotation="0 90 0"></a-entity>
-        <a-entity id="stew-handle-2" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" mixin="handle-visual" position="0 0.35 0.35" rotation="0 90 0"></a-entity>
+        <a-entity id="stew-handle-1" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" position="0 0.35 -0.35" rotation="0 90 0"></a-entity>
+        <a-entity id="stew-handle-2" data-magnet-range="0.2,0.1,360,180" data-pick-up="parent" class="magnet-left magnet-right" position="0 0.35 0.35" rotation="0 90 0"></a-entity>
       </a-gltf-model>
       <a-gltf-model id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5">
         <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
       </a-gltf-model>
+  
+      <a-gltf-model id="ladder" ladder="grabbables:;" shadow src="#ladder-gltf" position="-4.98177 -0.01925 -2.97802" rotation="-4.96238746362806 -62.929673512603706 0.6165025875607658" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 1.25 0;" ammo-restitution="1.5">
+        <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
+        <a-entity position="-0.25 0.07 0" linear-constraint="target:#left-no-magnet;axis:0 1 0;max:2.5;step:0.2;">
+          <a-entity data-magnet-range="0.2,0.1,360,300" class="magnet-left" rotation="0 90 0" linear-constraint="target:#left-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
+        </a-entity>
+        <a-entity position="-0.25 0.07 0" linear-constraint="target:#right-no-magnet;axis:0 1 0;max:2.5;step:0.2;">
+          <a-entity data-magnet-range="0.2,0.1,360,300" class="magnet-right" rotation="0 -90 0" linear-constraint="target:#right-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
+        </a-entity>
+      </a-gltf-model>
+      
       <a-gltf-model id="clock" shadow="receive:true;" src="#clock-gltf" position="-5 0 1.8" rotation="0 51 0" ammo-body-from-model="type:dynamic;mass:15;" ammo-shape-from-model="type: box;offset:0 1.1 0;" ammo-restitution="1.5"></a-gltf-model>
       <a-gltf-model class="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
       <a-gltf-model src="#building-glb"

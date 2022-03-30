@@ -86,23 +86,6 @@ AFRAME.registerComponent('hideparts', {
   }
 });
 
-AFRAME.registerSystem('exposure', {
-  schema: {
-    default: 0.5
-  },
-  init () {
-    const renderer = this.el.renderer;
-    renderer.physicallyCorrectLights = true;
-    renderer.logarithmicDepthBuffer = true;
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  },
-  update () {
-    const renderer = this.el.renderer;
-    renderer.toneMappingExposure = this.data;
-  }
-});
-
 AFRAME.registerComponent('no-tonemapping', {
   schema: {
     default: ''
