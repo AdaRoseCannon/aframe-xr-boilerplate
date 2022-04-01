@@ -40,7 +40,6 @@ This should have an object which can receive a shadow and works well for augment
 
 This file provides utilities for modifying 3D models and how they are displayed.
 
-* `exposure="0.5"`, add this to `<a-scene>` to change the exposure of the scene to make it brighter or darker
 * `no-tonemapping`, this opts an object out of tone mapping which is useful for using flat materials to look like light sources
 * `lightmap="src:#bake;intensity: 10; filter:Window,Ceiling,floor;"`, this lets you use a lightmap on a gltf model, to use it provide the lightmap and optionally constrain the lightmap to certain elements
 * `depthwrite`, this lets you overwrite a materials depthwrite property useful in case of weird depth issues on materials with transparency
