@@ -27,21 +27,13 @@ This file provides the `ar-shadow-helper` component which lets a plane track a p
 so that it recieves an optimal amount of shadow from a directional light.
 
 This should have an object which can receive a shadow and works well for augmented reality with the
-`shader:shadow` material
-
-It also includes `auto-shadow-cam` which controls the orthogonal shadow camera of a directional light
-so that the camera covers the minimal area required to fully light an object.
+`shader:shadow` material.
 
 ```html
-<a-light id="dirlight" auto-shadow-cam intensity="0.4" light="castShadow:true;type:directional" position="10 10 10"></a-light>
-    
-<a-entity
-  material="shader:shadow; depthWrite:false; opacity:0.9;"
-  visible="false"
-  geometry="primitive:shadow-plane;"
-  shadow="cast:false;receive:true;"
-  ar-shadow-helper="target:#my-objects;light:#dirlight;"
-></a-entity>
+<a-light id="dirlight" shadow-camera-automatic="[ar-shadow-helper],#table,#ladder" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
+  <a-entity ar-shadow-helper="target:#my-ar-objects;light:#dirlight;" visible="false">
+  <a-plane rotation="-90 0 0" shadow="cast:false;receive:true;" position="0 0.01 0" material="shader:shadow; depthWrite:false; opacity:0.9;"></a-plane>
+</a-entity>
 ```
 
 ### model-utils.js
