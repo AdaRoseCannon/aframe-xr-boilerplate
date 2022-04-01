@@ -121,10 +121,10 @@ AFRAME.registerComponent("toggle-physics", {
 AFRAME.registerComponent("ladder", {
   schema: {
     cameraRig: {
-      type: 'selector'
+      default: ''
     },
     grabbables: {
-      type: 'selectorAll'
+      default: ''
     }
   },
   init () {
@@ -132,29 +132,46 @@ AFRAME.registerComponent("ladder", {
     this.ladderRelease = this.ladderRelease.bind(this);
     this.startingRigPosition = new THREE.Vector3();
     this.startingHandPosition = new THREE.Vector3();
-    this.ladderHands = 0;
-    this.holdingLadder = false;
-    if (this.data.grabbables) this.data.grabbables.forEach(el => {
-      el.addEventListener('grabbed', el);
-      el.addEventListener('released', el);
-    });
+    this.ladderHands = [];
+    this.grabbables = [];
+    this.cameraRig = document.querySelector(this.data.cameraRig);
+    if (this.data.grabbables) for (const el of this.el.querySelectorAll(this.data.grabbables)) {
+      this.grabbables.push(el);
+      el.addEventListener('grabbed', this.ladderGrab);
+      el.addEventListener('released', this.ladderRelease);
+    }
   },
   ladderRelease(e) {
-    if (this.ladderHands === 0) return console.log('This should never happen');
-    this.ladderHands--;
-    this.holdingLadder = !!this.ladderHands;
+    const oldActiveHand = e.detail.byNoMagnet;
+    let index;
+    while ((index=this.ladderHands.indexOf(oldActiveHand))!==-1) this.ladderHands.splice(index,1);
+    
+    const activeHand = this.ladderHands[0];
+    if (activeHand) {
+      this.startingHandPosition.copy(activeHand.object3D.position);
+      this.startingRigPosition.copy(this.cameraRig.object3D.position);
+    }
   },
   ladderGrab(e) {
-    if (this.ladderHands === 0) {
-      this.startingRigPosition.copy(this.cameraRig.position);
-    }
-    this.ladderHands++;
+    const activeHand = e.detail.byNoMagnet;
+    this.startingHandPosition.copy(activeHand.object3D.position);
+    this.startingRigPosition.copy(this.cameraRig.object3D.position);
+    this.ladderHands.unshift(activeHand);
     this.holdingLadder = true;
   },
   tick () {
-    
+    const activeHand = this.ladderHands[0];
+    if (activeHand) {
+      this.cameraRig.object3D.position.subVectors(this.startingHandPosition, activeHand.object3D.position);
+      this.cameraRig.object3D.position.applyQuaternion(this.cameraRig.object3D.quaternion);
+      this.cameraRig.object3D.position.add(this.startingRigPosition);
+    }
   },
   remove () {
+    this.grabbables.forEach(el => {
+      el.removeEventListener('grabbed', this.ladderGrab);
+      el.removeEventListener('released', this.ladderRelease);
+    });
   }
 });
 
@@ -185,22 +202,20 @@ window.addEventListener("DOMContentLoaded", function() {
     watergun.addEventListener('grabbed', function (e) {
       const by = e.detail.by;
       if (e.target === watergun) {
+        watergun.className = '';
         if (by.dataset.right) watergunSlider.className = 'magnet-left';
         if (by.dataset.left) watergunSlider.className = 'magnet-right';
       }
       if (e.target === watergunSlider) {
-        if (by.dataset.right) watergun.setAttribute('linear-constraint', 'target', '#right-no-magnet');
-        if (by.dataset.left) watergun.setAttribute('linear-constraint', 'target', '#left-no-magnet');
+        watergun.setAttribute('linear-constraint', 'target', '#' + e.detail.byNoMagnet.id);
       }
     });
     watergun.addEventListener('released', function (e) {
       const by = e.detail.by;
+      watergun.setAttribute('linear-constraint', 'target', '');
       if (e.target === watergun) {
+        watergun.className = 'magnet-right magnet-left';
         watergunSlider.className = '';
-        watergun.setAttribute('linear-constraint', 'target', '');
-      }
-      if (e.target === watergunSlider) {
-        watergun.setAttribute('linear-constraint', 'target', '');
       }
     });
   }
