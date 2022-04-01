@@ -27,19 +27,28 @@ This file provides the `ar-shadow-helper` component which lets a plane track a p
 so that it recieves an optimal amount of shadow from a directional light.
 
 This should have an object which can receive a shadow and works well for augmented reality with the
-`shader:shadow` material.
+`shader:shadow` material
+
+It also includes `auto-shadow-cam` which controls the orthogonal shadow camera of a directional light
+so that the camera covers the minimal area required to fully light an object.
 
 ```html
-<a-light id="dirlight" shadow-camera-automatic="[ar-shadow-helper],#table,#ladder" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
-  <a-entity ar-shadow-helper="target:#my-ar-objects;light:#dirlight;" visible="false">
-  <a-plane rotation="-90 0 0" shadow="cast:false;receive:true;" position="0 0.01 0" material="shader:shadow; depthWrite:false; opacity:0.9;"></a-plane>
-</a-entity>
+<a-light id="dirlight" auto-shadow-cam intensity="0.4" light="castShadow:true;type:directional" position="10 10 10"></a-light>
+    
+<a-entity
+  material="shader:shadow; depthWrite:false; opacity:0.9;"
+  visible="false"
+  geometry="primitive:shadow-plane;"
+  shadow="cast:false;receive:true;"
+  ar-shadow-helper="target:#my-objects;light:#dirlight;"
+></a-entity>
 ```
 
 ### model-utils.js
 
 This file provides utilities for modifying 3D models and how they are displayed.
 
+* `exposure="0.5"`, add this to `<a-scene>` to change the exposure of the scene to make it brighter or darker
 * `no-tonemapping`, this opts an object out of tone mapping which is useful for using flat materials to look like light sources
 * `lightmap="src:#bake;intensity: 10; filter:Window,Ceiling,floor;"`, this lets you use a lightmap on a gltf model, to use it provide the lightmap and optionally constrain the lightmap to certain elements
 * `depthwrite`, this lets you overwrite a materials depthwrite property useful in case of weird depth issues on materials with transparency
