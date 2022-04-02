@@ -14,15 +14,15 @@
 	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
   <script src="https://mixedreality.mozilla.org/ammo.js/builds/ammo.wasm.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.0/build/handy-controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.0/build/magnet-helpers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.5/build/handy-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.5/build/magnet-helpers.js"></script>
 <!--   <script src="https://unpkg.com/aframe-inspector@1.3.x/dist/aframe-inspector.min.js"></script> -->
 <!--   <script src="handy-controls.js"></script> -->
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
   <script src="model-utils.js"></script>
-<!--   <script src="magnet-helpers.js"></script> -->
+  <script src="magnet-helpers.js"></script>
   
   <!-- Our custom behaviour -->
 	<script src="main.js"></script>
@@ -185,10 +185,20 @@
       <a-gltf-model id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5">
         <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
       </a-gltf-model>
+      
+      <!-- Button test -->
+      <a-box position="-1.657 0.893 0.421" width="0.2" height="0.2" depth="0.2" color="grey"
+          animation__press="startEvents:press;property:components.material.material.color;type:color;to:green;dur:100;"
+          animation__release="startEvents:release;property:components.material.material.color;type:color;to:grey;dur:100;"
+      >
+        <a-entity position="0 0.12 0" linear-constraint="target:[data-no-magnet];axis:0 1 0;min:0;max:0.18;radius:0.1;useFixedValueIfOutOfRange:true;valueIfOutOfRange:0.18;downEventName:press;downEventThreshold:0;upEventName:release;upEventThreshold:0.18;">
+          <a-cylinder radius="0.09" height="0.2" position="0 -0.1 0" color="hotpink"></a-cylinder>
+        </a-entity>
+      </a-box>
   
       <a-gltf-model id="ladder" ladder="grabbables:#ladder-left-hand,#ladder-right-hand;cameraRig:#cameraRig;" shadow src="#ladder-gltf" position="-4.98177 -0.01925 -2.97802" rotation="-4.9623 -62.929 0.6165" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 1.25 0;" ammo-restitution="1.5">
         <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
-        <a-entity position="-0.25 0.07 0" linear-constraint="target:#left-no-magnet;axis:0 1 0;max:2.5;step:0.2;">
+        <a-entity position="-0.25 0.07 0" linear-constraint="target:#left-no-magnet;axis:0 1 0;min:0;max:2.4;step:0.2;">
           <a-entity id="ladder-left-hand" data-magnet-range="0.2,0.15,360,300" class="magnet-left" rotation="0 -90 0" linear-constraint="target:#left-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
         </a-entity>
         <a-entity position="-0.25 0.07 0" linear-constraint="target:#right-no-magnet;axis:0 1 0;max:2.5;step:0.2;">
