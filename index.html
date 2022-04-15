@@ -15,14 +15,13 @@
   <script src="https://mixedreality.mozilla.org/ammo.js/builds/ammo.wasm.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.5/build/handy-controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.5/build/magnet-helpers.js"></script>
-<!--   <script src="https://unpkg.com/aframe-inspector@1.3.x/dist/aframe-inspector.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.5/build/magnet-helpers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/jsantell/THREE.IK@master/build/three-ik.js"></script>
 <!--   <script src="handy-controls.js"></script> -->
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
   <script src="model-utils.js"></script>
-  <script src="magnet-helpers.js"></script>
   
   <!-- Our custom behaviour -->
 	<script src="main.js"></script>
@@ -45,7 +44,7 @@
 		webxr="overlayElement:#dom-overlay;"
 		background="color:skyblue;"
 		reflection="directionalLight:#dirlight;"
-    renderer="physicallyCorrectLights:true;colorManagement:true;exposure:2;toneMapping:ACESFilmic;"
+    renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:2;toneMapping:ACESFilmic;"
 		ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
 		shadow="type: pcfsoft"
 		gltf-model="dracoDecoderPath: https://cdn.jsdelivr.net/npm/three@0.129.0/examples/js/libs/draco/gltf/;"
@@ -185,6 +184,22 @@
       <a-gltf-model id="table" shadow="receive:true;" src="#table-gltf" position="-2 0 0.8" rotation="0 51 0" scale="1.5 1.5 1.5" ammo-body-from-model="type: static;" ammo-shape-from-model="type: box;offset:0 0.4 0;" ammo-restitution="1.5">
         <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
       </a-gltf-model>
+    
+      // Make a mirror for the user's avatar
+      <a-entity scale="1 1 -1" rotation="0 90 0" position="-3 0 1.5">
+        <a-box id="avatar-mirror-head" scale="0.3 0.3 0.3" color="skyblue" match-position-by-id="xr-camera"></a-box>
+        <a-entity torso="head:#avatar-mirror-head;">
+          <a-box width="0.35" height="0.2" depth="0.2" position="0 -0.1 0"></a-box>
+          <a-sphere id="avatar-mirror-shoulder-left" color="lightgreen" radius="0.11" position="-0.175 -0.1 0"></a-sphere>
+          <a-sphere id="avatar-mirror-shoulder-right" color="lightred" radius="0.11" position="0.175 -0.1 0"></a-sphere>
+        </a-entity>
+        
+        <a-box id="avatar-mirror-hand-left" scale="0.1 0.1 0.2" color="hotpink" match-position-by-id="left-magnet"></a-box>
+        <a-box id="avatar-mirror-hand-right" scale="0.1 0.1 0.2" color="yellow" match-position-by-id="right-magnet"></a-box>
+        
+        <a-box scale="0.1 0.1 0.1" color="hotpink" elbow="shoulder:#avatar-mirror-shoulder-left;hand:#avatar-mirror-hand-left;"></a-box>
+        <a-box scale="0.1 0.1 0.1" color="yellow" elbow="shoulder:#avatar-mirror-shoulder-right;hand:#avatar-mirror-hand-right;"></a-box>
+      </a-entity>
       
       <!-- Button test -->
       <a-box position="-1.657 0.893 0.421" width="0.2" height="0.2" depth="0.2" color="grey"
