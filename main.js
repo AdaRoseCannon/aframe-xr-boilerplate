@@ -40,148 +40,6 @@ AFRAME.registerComponent("xr-follow", {
   }
 });
 
-AFRAME.registerComponent("match-position-by-id", {
-  schema: {
-    default: ''
-  },
-  tick() {
-    if (this.data === 'xr-camera') {
-      const obj = this.el.sceneEl.renderer.xr.getCameraPose();
-      if (obj) {
-        this.el.object3D.position.copy(obj.transform.position);
-        this.el.object3D.quaternion.copy(obj.transform.orientation);
-      }
-    } else {
-      const obj = document.getElementById(this.data).object3D;
-      if (obj) {
-        this.el.object3D.position.copy(obj.position);
-        this.el.object3D.quaternion.copy(obj.quaternion);
-      }
-    }
-  }
-});
-
-bodyBits:
-{
-  const tempVector3 = new THREE.Vector3();
-  const tempQuaternionA = new THREE.Quaternion();
-  const tempQuaternionB = new THREE.Quaternion();
-  const zAxis = new THREE.Vector3(0,0,1);
-  AFRAME.registerComponent("torso", {
-    schema: {
-      head: {
-        default: ''
-      },
-      neckLength: {
-        default: 0.2
-      }
-    },  
-    update() {
-      this.head = document.querySelector(this.data.head);
-      if (this.head) this.head = this.head.object3D;
-    },
-    tick() {
-      if (this.head) {
-        const $o = this.el.object3D;
-        this.head.getWorldPosition($o.position);
-        $o.position.y -= this.data.neckLength;
-        $o.parent.worldToLocal($o.position);
-        $o.parent.getWorldQuaternion(tempQuaternionB).invert();
-        this.head.getWorldQuaternion(tempQuaternionA).premultiply(tempQuaternionB);
-        
-        tempVector3.copy(zAxis);
-        tempVector3.applyQuaternion(tempQuaternionA);
-        tempVector3.y=0;
-        tempVector3.normalize();
-        
-        $o.quaternion.setFromUnitVectors(tempVector3, zAxis);
-      }
-    }
-  });
-  
-  const tempVectorShoulderPos = new THREE.Vector3();
-  const tempVectorHandPos = new THREE.Vector3();
-  const c0 = new THREE.Vector3();
-  AFRAME.registerComponent("elbow", {
-    schema: {
-      shoulder: {
-        default: ''
-      },
-      hand: {
-        default: ''
-      },
-      foreArmLength: {
-        default: 0.3
-      },
-      upperArmLength: {
-        default: 0.3
-      }
-    },  
-    update() {
-      this.hand = document.querySelector(this.data.hand);
-      if (this.hand) this.hand = this.hand.object3D;
-      this.shoulder = document.querySelector(this.data.shoulder);
-      if (this.shoulder) this.shoulder = this.shoulder.object3D;
-    },
-    tick(time,delta) {
-      if (this.shoulder && this.hand) {
-        const $o = this.el.object3D;
-        
-        // add a little gravity
-        $o.position.y -= 0.1 * 9.8 * delta/1000;
-        
-        // Local hand position
-        this.hand.getWorldPosition(tempVectorHandPos);
-        $o.parent.worldToLocal(tempVectorHandPos);
-        
-        // Local Shoulder position
-        this.shoulder.getWorldPosition(tempVectorShoulderPos);
-        $o.parent.worldToLocal(tempVectorShoulderPos);
-        
-        const r1 = this.data.upperArmLength;
-        const r2 = this.data.foreArmLength;
-        
-        const d=tempVector3.subVectors(tempVectorShoulderPos,tempVectorHandPos).length();
-        
-        // if arm is stretched longer than bones then elbow is placed proportionally
-        if (d >= r1 + r2) {
-          $o.position.lerpVectors(tempVectorShoulderPos,tempVectorHandPos,r1/(r1+r2));
-          return
-        }
-        
-        // One bone sphere is inside the other, i.e. hand is placed on shoulder
-        // and one bone is smaller than the other and do not intersect
-        if (Math.max(r1,r2) >= (d + Math.min(r1,r2))) {
-          // this weird so do nothing
-          return
-        }
-        
-        // The usual situation the two spheres intersesct so find the circle at the intersection point.
-        const d1 = 0.5*(d+(r1*r1-r2*r2)/d);
-        const normal = tempVector3.subVectors(tempVectorHandPos, tempVectorShoulderPos).normalize();
-        const r = Math.sqrt(r1*r1-d1*d1);
-        
-        // The intersection of the spheres form a circle radius r
-        // with center c0
-        c0.copy(tempVectorShoulderPos).addScaledVector(normal, d1);
-        
-        // We have a plane with normal that contains c0
-        // We want to place the object where a vector n from the objects original position (p0) intersects the plane
-        // n dot p = c0.n
-        // Sub in vector equation p=tn + p0
-        // t n.n + p0.n = c0.n
-        // t = n.p0 - n.c0 / (n.n)
-        // p[new] = p0 + t n
-        
-        const t = normal.dot(tempVector3.copy($o.position).sub(c0));
-        
-        // move elbow inline with elbow plane and place it on the circle
-        $o.position.addScaledVector(normal, t).sub(c0).setLength(r).add(c0);
-      }
-    }
-  });
-}
-
 AFRAME.registerComponent("exit-on", {
   schema: {
     default: 'click'
@@ -213,6 +71,8 @@ AFRAME.registerComponent("ammo-shape-from-model", {
     this.el.removeEventListener('object3dset', this.onLoad);
   }
 });
+
+
 AFRAME.registerComponent("ammo-body-from-model", {
   schema: {
     type: 'string',
