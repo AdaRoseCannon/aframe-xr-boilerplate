@@ -168,10 +168,10 @@ bodyBits:
         // if arm is stretched longer than bones then elbow is placed proportionally
         if (d >= r1 + r2) {
           $o.position.lerpVectors(tempVectorShoulderPos,tempVectorHandPos,r1/(r1+r2));
-          tempVector3.subVectors(this.elbow.position, this.shoulder.position).normalize();
+          tempVector3.subVectors($o.position, tempVectorShoulderPos).normalize();
           this.shoulder.quaternion.setFromUnitVectors(yAxis, tempVector3);
-          tempVector3.subVectors(this.hand.position, this.elbow.position).normalize();
-          this.elbow.quaternion.setFromUnitVectors(yAxis, tempVector3);
+          tempVector3.subVectors(tempVectorHandPos, $o.position).normalize();
+          $o.quaternion.setFromUnitVectors(yAxis, tempVector3);
           return
         }
         
@@ -204,10 +204,10 @@ bodyBits:
         // move elbow inline with elbow plane and place it on the circle
         $o.position.addScaledVector(normal, t).sub(c0).setLength(r).add(c0);
 
-        tempVector3.subVectors(this.elbow.position, this.shoulder.position).normalize();
+        tempVector3.subVectors($o.position, tempVectorShoulderPos).normalize();
         this.shoulder.quaternion.setFromUnitVectors(yAxis, tempVector3);
-        tempVector3.subVectors(this.hand.position, this.elbow.position).normalize();
-        this.elbow.quaternion.setFromUnitVectors(yAxis, tempVector3);
+        tempVector3.subVectors(tempVectorHandPos, $o.position).normalize();
+        $o.quaternion.setFromUnitVectors(yAxis, tempVector3);
       }
     }
   });
