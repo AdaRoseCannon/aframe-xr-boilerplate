@@ -26,6 +26,33 @@ AFRAME.registerComponent("origin-on-ar-start", {
   }
 });
 
+
+AFRAME.registerComponent("match-position-by-id", {
+  schema: {
+    default: ''
+  },
+  tick() {
+    let obj;
+    
+    if (this.data === 'xr-camera') {
+      const xrCamera = this.el.sceneEl.renderer.xr.getCameraPose();
+      if (xrCamera) {
+        this.el.object3D.position.copy(xrCamera.transform.position);
+        this.el.object3D.quaternion.copy(xrCamera.transform.orientation);
+        return;
+      }
+      obj = this.el.sceneEl.camera;
+    } else {
+      obj = document.getElementById(this.data).object3D;
+    }
+    if (obj) {
+      this.el.object3D.position.copy(obj.position);
+      this.el.object3D.quaternion.copy(obj.quaternion);
+    }
+
+  }
+});
+
 AFRAME.registerComponent("xr-follow", {
   schema: {},
   init() {
