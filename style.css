@@ -2,15 +2,9 @@ body {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-#dom-overlay-message {
+.overlay-footer {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  padding: 1em;
-  background: #33333355;
-  border-top: 5px solid #ffffff55;
-  color: white;
+  inset: auto 0 0 0;
 }
 
 .a-dom-overlay button {
@@ -20,5 +14,21 @@ body {
   border: 3px solid white;
   border-radius: 1em;
   margin: 1em 1em 0 0;
+  color: white;
+}
+
+#my-interface h2 {
+  margin: 0;
+}
+
+#my-interface fieldset {
+  padding: 0;
+  margin-bottom: 0.5em;
+}
+
+#dom-overlay-message {
+  padding: 1em;
+  background: #33333355;
+  border-top: 5px solid #ffffff55;
   color: white;
 }

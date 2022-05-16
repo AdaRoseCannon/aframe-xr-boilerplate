@@ -1,5 +1,5 @@
 /* jshint esversion: 9 */
-/* global THREE, AFRAME, Ammo */
+/* global THREE, AFRAME */
 
 AFRAME.registerComponent("hide-on-hit-test-start", {
   init: function() {
@@ -25,6 +25,12 @@ AFRAME.registerComponent("origin-on-ar-start", {
     });
   }
 });
+
+// TODO!!
+function toggleThumbstick(detail) {
+  const type = detail.value;
+  console.log(type);
+}
 
 
 AFRAME.registerComponent("match-position-by-id", {
@@ -81,7 +87,7 @@ AFRAME.registerComponent("exit-on", {
   }
 });
 
-AFRAME.registerComponent("ammo-shape-from-model", {
+AFRAME.registerComponent("physx-body-from-model", {
   schema: {
     type: 'string',
     default: ''
@@ -89,27 +95,8 @@ AFRAME.registerComponent("ammo-shape-from-model", {
   init () {
     const details = this.data;
     this.onLoad = function () {
-      this.setAttribute('ammo-shape', details);
-      this.removeAttribute('ammo-shape-from-model');
-    }
-    this.el.addEventListener('object3dset', this.onLoad);
-  },
-  remove () {
-    this.el.removeEventListener('object3dset', this.onLoad);
-  }
-});
-
-
-AFRAME.registerComponent("ammo-body-from-model", {
-  schema: {
-    type: 'string',
-    default: ''
-  },
-  init () {
-    const details = this.data;
-    this.onLoad = function () {
-      this.setAttribute('ammo-body', details);
-      this.removeAttribute('ammo-body-from-model');
+      this.setAttribute('physx-body', details);
+      this.removeAttribute('physx-body-from-model');
     }
     this.el.addEventListener('object3dset', this.onLoad);
   },
@@ -121,23 +108,23 @@ AFRAME.registerComponent("ammo-body-from-model", {
 
 AFRAME.registerComponent("toggle-physics", {
   init () {
-    this.onPickup = function () { this.el.setAttribute('ammo-body', 'type', 'kinematic'); }.bind(this);
+    this.onPickup = function () { this.el.setAttribute('physx-body', 'type', 'kinematic'); }.bind(this);
     this.onPutDown = function (e) {
       const referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
-      this.el.setAttribute('ammo-body', 'type', 'dynamic');
-      if (e.detail.frame && e.detail.inputSource) {
-        const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
-        if (pose && pose.angularVelocity) {
-          const velocity = new Ammo.btVector3(pose.angularVelocity.x,pose.angularVelocity.y,pose.angularVelocity.z);
-          this.el.body.setAngularVelocity(velocity);
-          Ammo.destroy(velocity);
-        }
-        if (pose && pose.linearVelocity) {
-          const velocity = new Ammo.btVector3(pose.linearVelocity.x,pose.linearVelocity.y,pose.linearVelocity.z);
-          this.el.body.setLinearVelocity(velocity);
-          Ammo.destroy(velocity);
-        }
-      }
+      this.el.setAttribute('physx-body', 'type', 'dynamic');
+      // if (e.detail.frame && e.detail.inputSource) {
+      //   const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
+      //   if (pose && pose.angularVelocity) {
+      //     const velocity = new Ammo.btVector3(pose.angularVelocity.x,pose.angularVelocity.y,pose.angularVelocity.z);
+      //     this.el.body.setAngularVelocity(velocity);
+      //     Ammo.destroy(velocity);
+      //   }
+      //   if (pose && pose.linearVelocity) {
+      //     const velocity = new Ammo.btVector3(pose.linearVelocity.x,pose.linearVelocity.y,pose.linearVelocity.z);
+      //     this.el.body.setLinearVelocity(velocity);
+      //     Ammo.destroy(velocity);
+      //   }
+      // }
     }.bind(this);
     this.el.addEventListener('pickup', this.onPickup);
     this.el.addEventListener('putdown', this.onPutDown);
