@@ -17,6 +17,10 @@ body {
   color: white;
 }
 
+#my-interface {
+  user-select: none;
+}
+
 #my-interface h2 {
   margin: 0;
 }

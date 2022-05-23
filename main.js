@@ -26,12 +26,6 @@ AFRAME.registerComponent("origin-on-ar-start", {
   }
 });
 
-// TODO!!
-function toggleThumbstick(detail) {
-  const type = detail.value;
-  console.log(type);
-}
-
 
 AFRAME.registerComponent("match-position-by-id", {
   schema: {
@@ -106,25 +100,28 @@ AFRAME.registerComponent("physx-body-from-model", {
 });
 
 
+/*
+ TODO: Apply the velocity of the inputSource, make sure you compensate for the rotation of the cameraRig!! 
+*/
 AFRAME.registerComponent("toggle-physics", {
   init () {
     this.onPickup = function () { this.el.setAttribute('physx-body', 'type', 'kinematic'); }.bind(this);
     this.onPutDown = function (e) {
       const referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
       this.el.setAttribute('physx-body', 'type', 'dynamic');
-      // if (e.detail.frame && e.detail.inputSource) {
-      //   const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
-      //   if (pose && pose.angularVelocity) {
+      if (e.detail.frame && e.detail.inputSource) {
+        const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
+        if (pose && pose.angularVelocity) {
       //     const velocity = new Ammo.btVector3(pose.angularVelocity.x,pose.angularVelocity.y,pose.angularVelocity.z);
       //     this.el.body.setAngularVelocity(velocity);
       //     Ammo.destroy(velocity);
-      //   }
-      //   if (pose && pose.linearVelocity) {
+        }
+        if (pose && pose.linearVelocity) {
       //     const velocity = new Ammo.btVector3(pose.linearVelocity.x,pose.linearVelocity.y,pose.linearVelocity.z);
       //     this.el.body.setLinearVelocity(velocity);
       //     Ammo.destroy(velocity);
-      //   }
-      // }
+        }
+      }
     }.bind(this);
     this.el.addEventListener('pickup', this.onPickup);
     this.el.addEventListener('putdown', this.onPutDown);
@@ -167,6 +164,9 @@ AFRAME.registerComponent("ladder", {
     if (activeHand) {
       this.startingHandPosition.copy(activeHand.object3D.position);
       this.startingRigPosition.copy(this.cameraRig.object3D.position);
+    } else {
+      // Turn on the navmesh if no hands on the ladder
+      this.cameraRig.setAttribute('simple-navmesh-constraint', 'enabled', true);
     }
   },
   ladderGrab(e) {
@@ -175,6 +175,8 @@ AFRAME.registerComponent("ladder", {
     this.startingRigPosition.copy(this.cameraRig.object3D.position);
     this.ladderHands.unshift(activeHand);
     this.holdingLadder = true;
+    // Turn off the navmesh if holding the ladder
+    this.cameraRig.setAttribute('simple-navmesh-constraint', 'enabled', false);
   },
   tick () {
     const activeHand = this.ladderHands[0];
@@ -198,7 +200,8 @@ window.addEventListener("DOMContentLoaded", function() {
   const arContainerEl = document.getElementById("my-ar-objects");
   const cameraRig = document.getElementById("cameraRig");
   const building = document.getElementById("building");
-  
+
+  // Once the building has loaded update the relfections
   building.addEventListener('object3dset', function () {
     if (this.components && this.components.reflection) this.components.reflection.needsVREnvironmentUpdate = true;
   }, {once: true});
@@ -283,6 +286,7 @@ window.addEventListener("DOMContentLoaded", function() {
   });
 });
 
+// Make the cheap windows look okay 
 AFRAME.registerComponent('window-replace', {
   schema: {
     default: ''

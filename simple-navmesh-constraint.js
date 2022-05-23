@@ -5,6 +5,9 @@
 */
 AFRAME.registerComponent('simple-navmesh-constraint', {
   schema: {
+    enabled: {
+      default: true
+    },
     navmesh: {
       default: ''
     },
@@ -57,6 +60,7 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     let firstTry = true;
     
     return function tick(time, delta) {
+      if (this.data.enabled === false) return;
       if (this.lastPosition === null) {
         firstTry = true;
         this.lastPosition = new THREE.Vector3();
