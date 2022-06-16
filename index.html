@@ -7,17 +7,17 @@
   </script>
 
   <!-- the AFrame library and 3rd party components -->
-	<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@0d23f9b21c33ab6821046ce95835492cb84996c5/dist/aframe-master.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@0d23f9b/dist/aframe-master.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
   <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
 	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/Hypnos-phi/aframe-extras@d08cf88/dist/aframe-extras.controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774bdf46ff6245632716c57bd23b19c5cbc4/lib/physx.release.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774bdf46ff6245632716c57bd23b19c5cbc4/lib/physics.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774/lib/physx.release.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774/lib/physics.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-blink-controls@573383a/dist/aframe-blink-controls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.9/build/handy-controls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.9/build/magnet-helpers.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aframe-htmlmesh@1.0.0/build/aframe-html.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-htmlmesh@1.0.1/build/aframe-html.min.js"></script>
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
@@ -123,9 +123,9 @@
         </a-entity>
         
         <!-- Use the finger tips for teleporting when the user points -->
-        <a-entity data-right="index-finger-tip" mixin="blink" blink-controls="snapTurn:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;endEvents:pose_cancel_point;"></a-entity>
-        <a-entity data-left="index-finger-tip"  mixin="blink" blink-controls="snapTurn:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;endEvents:pose_cancel_point;"></a-entity>
-        
+        <a-entity data-right="index-finger-tip" mixin="blink" blink-controls="snapTurn:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;cancelEvents:pose_cancel_point;"></a-entity>
+        <a-entity data-left="index-finger-tip"  mixin="blink" blink-controls="snapTurn:false;startEvents:pose_point_fuseShort;endEvents:pose_point_fuseLong;cancelEvents:pose_cancel_point;"></a-entity>
+
         <!-- The direction hands are facing, we will also attach labels to show the currently detected pose or controller button -->
         <!-- These also do teleportaion for Blink controls in VR -->
         <a-entity data-right="ray" mixin="blink" html-pointer="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
@@ -202,10 +202,10 @@
       <a-gltf-model id="ladder" ladder="grabbables:#ladder-left-hand,#ladder-right-hand;cameraRig:#cameraRig;" shadow src="#ladder-gltf" position="-4.98177 -0.01925 -2.97802" rotation="-4.9623 -62.929 0.6165" physx-body-from-model="type: static;">
         <a-plane rotation="-90 0 0" width="1.2" height="0.6" class="navmesh-hole" visible="false"></a-plane>
         <a-entity position="-0.25 0.07 0" linear-constraint="target:#left-no-magnet;axis:0 1 0;min:0;max:2.4;step:0.2;">
-          <a-entity id="ladder-left-hand" data-magnet-range="0.2,0.15,360,300" class="magnet-left" rotation="0 -90 0" linear-constraint="target:#left-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
+          <a-entity id="ladder-left-hand" data-magnet-range="0.2,0.15,360,300" class="magnet-left" rotation="0 90 0" linear-constraint="target:#left-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
         </a-entity>
         <a-entity position="-0.25 0.07 0" linear-constraint="target:#right-no-magnet;axis:0 1 0;max:2.5;step:0.2;">
-          <a-entity id="ladder-right-hand" data-magnet-range="0.2,0.15,360,300" class="magnet-right" rotation="0 90 0" linear-constraint="target:#right-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
+          <a-entity id="ladder-right-hand" data-magnet-range="0.2,0.15,360,300" class="magnet-right" rotation="0 -90 0" linear-constraint="target:#right-no-magnet;axis:1 0 0;max:0.5;"></a-entity>
         </a-entity>
       </a-gltf-model>
       

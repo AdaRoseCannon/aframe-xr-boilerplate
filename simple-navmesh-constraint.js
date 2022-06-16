@@ -19,11 +19,10 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     },
     exclude: {
       default: ''
+    },
+    xzOrigin: {
+      default: ''
     }
-  },
-  
-  init: function () {
-    
   },
   
   update: function () {
@@ -36,6 +35,7 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     } else {
       this.objects = els.map(el => el.object3D).concat(this.excludes.map(el => el.object3D));
     }
+    this.xzOrigin = this.data.xzOrigin ? this.el.querySelector(this.data.xzOrigin) : this.el;
   },
 
   tick: (function () {
@@ -64,14 +64,16 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
       if (this.lastPosition === null) {
         firstTry = true;
         this.lastPosition = new THREE.Vector3();
-        this.el.object3D.getWorldPosition(this.lastPosition);
+        this.xzOrigin.object3D.getWorldPosition(this.lastPosition);
+        if (this.data.xzOrigin) this.lastPosition.y -= this.xzOrigin.object3D.position.y;
       }
       
       const el = this.el;
       if (this.objects.length === 0) return;
 
-      this.el.object3D.getWorldPosition(nextPosition);
-      if (nextPosition.distanceTo(this.lastPosition) === 0) return;
+      this.xzOrigin.object3D.getWorldPosition(nextPosition);
+      if (this.data.xzOrigin) nextPosition.y -= this.xzOrigin.object3D.position.y;
+      if (nextPosition.distanceTo(this.lastPosition) <= 0.01) return;
       
       let didHit = false;
       // So that it does not get stuck it takes as few samples around the user and finds the most appropriate
@@ -104,8 +106,12 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
           } else {
             yVel = 0;
           }
-          el.object3D.position.copy(hitPos);
-          this.el.object3D.parent.worldToLocal(this.el.object3D.position);
+          tempVec.copy(hitPos);
+          this.xzOrigin.object3D.parent.worldToLocal(tempVec);
+          tempVec.sub(this.xzOrigin.object3D.position);
+          if (this.data.xzOrigin) tempVec.y += this.xzOrigin.object3D.position.y;
+          this.el.object3D.position.add(tempVec);
+          
           this.lastPosition.copy(hitPos);
           didHit = true;
           break;
