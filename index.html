@@ -7,17 +7,16 @@
   </script>
 
   <!-- the AFrame library and 3rd party components -->
-	<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@0d23f9b/dist/aframe-master.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.3.1/dist/aframe-environment-component.min.js"></script>
-  <script>window.module = {exports:{}}</script><!-- Dirty hack to get the sphere collider loading :-( -->
-	<script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@master/src/misc/sphere-collider.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/Hypnos-phi/aframe-extras@d08cf88/dist/aframe-extras.controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774/lib/physx.release.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/diarmidmackenzie/christmas-scene@4a6a774/lib/physics.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-blink-controls@573383a/dist/aframe-blink-controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.9/build/handy-controls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.9/build/magnet-helpers.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aframe-htmlmesh@1.0.1/build/aframe-html.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/vincentfretin/aframe@8bb1828/dist/aframe-master.min.js"></script> <!-- aframevr/aframe master 2022-12-07 21:10 three r147 -->
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-environment-component@35d0b9d/dist/aframe-environment-component.min.js"></script> <!-- post 1.3.1 release containing https://github.com/supermedium/aframe-environment-component/pull/78 changes -->
+
+  <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@09b8445/dist/components/sphere-collider.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@09b8445/dist/aframe-extras.controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/physx@8511e61/dist/physx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.10/build/handy-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.10/build/magnet-helpers.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-htmlmesh@2.0.1/build/aframe-html.min.js"></script>
   <script src="ar-shadow-helper.js"></script>
   <script src="ar-cursor.js"></script>
   <script src="simple-navmesh-constraint.js"></script>
@@ -40,7 +39,7 @@
 
 <body>
 	<a-scene
-    physx="autoLoad: true; delay: 1000; wasmUrl: https://stemkoski.github.io/A-Frame-Examples/js/physx.release.wasm; useDefaultScene: false;"
+    physx="autoLoad: true; delay: 1000; wasmUrl: https://cdn.jsdelivr.net/gh/c-frame/physx@8511e61/wasm/physx.release.wasm; useDefaultScene: false;"
 		webxr="overlayElement:#dom-overlay;"
 		background="color:skyblue;"
 		reflection="directionalLight:#dirlight;"
@@ -128,10 +127,10 @@
 
         <!-- The direction hands are facing, we will also attach labels to show the currently detected pose or controller button -->
         <!-- These also do teleportaion for Blink controls in VR -->
-        <a-entity data-right="ray" mixin="blink" html-pointer="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
+        <a-entity data-right="ray" mixin="blink" cursor="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
           <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-entity>
-        <a-entity data-left="ray" mixin="blink" html-pointer="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
+        <a-entity data-left="ray" mixin="blink" cursor="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
           <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-entity>
         
@@ -141,7 +140,7 @@
     
         <!-- markers to let us know the real location of the hands, you probably want to make them visible="false" or just make them empty <a-entities> -->
         <a-entity id="left-no-magnet" data-left="grip" data-no-magnet>
-          <a-entity html="#my-interface" position="-0.142 -0.0166 -0.02928" rotation="-80 90 0" scale="0.7 0.7 0.7"></a-entity>
+          <a-entity html="html:#my-interface;cursor:#cursor" position="-0.142 -0.0166 -0.02928" rotation="-80 90 0" scale="0.7 0.7 0.7"></a-entity>
         </a-entity>
         <a-entity id="right-no-magnet" data-right="grip" data-no-magnet></a-entity>
         
@@ -221,6 +220,7 @@
       ></a-gltf-model>
     </a-entity>
 
+    <a-sphere color="black" radius="0.005" id="cursor" material="shader:flat" visible="false"></a-sphere>
 
 	</a-scene>
 
@@ -247,9 +247,6 @@
           const type = detail.value;
           movementType = type;
           if (type === 'move') {
-
-            // Hack fix for when the camera rig is rotated.
-            cameraRig.object3D.rotation.y = 0;
             cameraRig.setAttribute('movement-controls', 'enabled', true);
             for (const p of rayPointers) p.removeAttribute('mixin');
           }
