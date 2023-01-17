@@ -98,36 +98,14 @@ AFRAME.registerComponent("physx-body-from-model", {
   }
 });
 
-
-/*
- TODO: Apply the velocity of the inputSource, make sure you compensate for the rotation of the cameraRig!! 
-*/
 AFRAME.registerComponent("toggle-physics", {
-  init () {
-    this.onPickup = function () { this.el.setAttribute('physx-body', 'type', 'kinematic'); }.bind(this);
-    this.onPutDown = function (e) {
-      const referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
-      this.el.setAttribute('physx-body', 'type', 'dynamic');
-      if (e.detail.frame && e.detail.inputSource) {
-        const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
-        if (pose && pose.angularVelocity) {
-      //     const velocity = new Ammo.btVector3(pose.angularVelocity.x,pose.angularVelocity.y,pose.angularVelocity.z);
-      //     this.el.body.setAngularVelocity(velocity);
-      //     Ammo.destroy(velocity);
-        }
-        if (pose && pose.linearVelocity) {
-      //     const velocity = new Ammo.btVector3(pose.linearVelocity.x,pose.linearVelocity.y,pose.linearVelocity.z);
-      //     this.el.body.setLinearVelocity(velocity);
-      //     Ammo.destroy(velocity);
-        }
-      }
-    }.bind(this);
-    this.el.addEventListener('pickup', this.onPickup);
-    this.el.addEventListener('putdown', this.onPutDown);
-  },
-  remove () {
-    this.el.removeEventListener('pickup', this.onPickup);
-    this.el.removeEventListener('putdown', this.onPutDown);
+  events: {
+    pickup: function() {
+      this.el.addState('grabbed');
+    },
+    putdown: function() {
+      this.el.removeState('grabbed');
+    }
   }
 });
 
