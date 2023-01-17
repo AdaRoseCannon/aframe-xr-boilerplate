@@ -103,8 +103,18 @@ AFRAME.registerComponent("toggle-physics", {
     pickup: function() {
       this.el.addState('grabbed');
     },
-    putdown: function() {
+    putdown: function(e) {
       this.el.removeState('grabbed');
+      if (e.detail.frame && e.detail.inputSource) {
+        const referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
+        const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
+        if (pose && pose.angularVelocity) {
+          this.el.components['physx-body'].rigidBody.setAngularVelocity(pose.angularVelocity);
+        }
+        if (pose && pose.linearVelocity) {
+          this.el.components['physx-body'].rigidBody.setLinearVelocity(pose.linearVelocity);
+        }
+      }
     }
   }
 });
