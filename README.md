@@ -65,5 +65,49 @@ To enable this you should place this component after any components which move t
 If the object needs to float off the floor (like the camera) then set the height property and it will stay that far from the ground.
 
 ```html
-<a-camera wasd-controls="acceleration:20;" simple-navmesh-constraint="navmesh:#navmesh-el;fall:0.5;height:1.65;" look-controls>
+<a-assets>
+ <a-asset-item id="navmesh-glb" src="navmesh.glb"></a-asset-item>
+</a-assets>
+<a-gltf-model class="navmesh" src="#navmesh-glb" visible="false"></a-gltf-model>
+<a-camera wasd-controls="acceleration:20;" simple-navmesh-constraint="navmesh:.navmesh;fall:0.5;height:1.65;" look-controls>
+```
+
+If you're using `blink-controls` and `movement-controls` components that are using a camera rig, you want to set `height:0` and set the camera position instead like this:
+
+```html
+<a-entity
+  id="cameraRig"
+  simple-navmesh-constraint="navmesh:.navmesh;fall:0.5;height:0;exclude:.navmesh-hole;"
+  movement-controls="speed:0.15;camera:#head;"
+  position="-1 0 1"
+>
+  <a-entity id="head" camera look-controls position="0 1.65 0"></a-entity>
+</a-entity>
+```
+
+You can't use `wasd-controls` if you're using `movement-controls`. `movement-controls` includes the `keyboard` controls that is moving the camera rig position. The `blink-controls` component is also moving the camera rig position. The `wasd-controls` component needs to be on the same entity than the `look-controls` for it to work properly, so that's not compatible with using `movement-controls` and `blink-controls`.
+
+The `exclude:.navmesh-hole` option allows you to have a navmesh that excludes some other geometries, like a plane that has the `navmesh-hole` class.
+Here is an example of how it works, with a navmesh from a green plane and exclude of a small red plane:
+
+```html
+<a-gltf-model src="piano.glb" position="-6 0 1">
+  <a-plane
+    class="navmesh-hole"
+    rotation="-90 0 0"
+    width="1.5"
+    height="0.6"
+    position="0 0.001 0"
+    color="red"
+    visible="true"
+  ></a-plane>
+</a-gltf-model>
+<a-plane
+  class="navmesh"
+  rotation="-90 0 0"
+  width="50"
+  height="50"
+  color="green"
+  visible="true"
+></a-plane>
 ```

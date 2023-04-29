@@ -1,8 +1,5 @@
 /* global AFRAME, THREE */
 
-/* Constrain an object to a navmesh, for example place this element after wasd-controls like so:
-`wasd-controls navmesh-physics="#navmesh-el"`
-*/
 AFRAME.registerComponent('simple-navmesh-constraint', {
   schema: {
     enabled: {
@@ -30,7 +27,7 @@ AFRAME.registerComponent('simple-navmesh-constraint', {
     this.excludes = this.data.exclude ? Array.from(document.querySelectorAll(this.data.exclude)):[];
     const els = Array.from(document.querySelectorAll(this.data.navmesh));
     if (els === null) {
-      console.warn('navmesh-physics: Did not match any elements');
+      console.warn('simple-navmesh-constraint: Did not match any elements');
       this.objects = [];
     } else {
       this.objects = els.map(el => el.object3D).concat(this.excludes.map(el => el.object3D));
