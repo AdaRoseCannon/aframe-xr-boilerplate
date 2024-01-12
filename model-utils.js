@@ -13,6 +13,10 @@ AFRAME.registerComponent('lightmap', {
     },
     basis: {
       default: false
+    },
+    channel: {
+      type: 'int',
+      default: 1
     }
   },
   init() {
@@ -20,6 +24,7 @@ AFRAME.registerComponent('lightmap', {
     const src = typeof this.data.src === 'string' ? this.data.src : this.data.src.src;
     const texture = new THREE.TextureLoader().load(src);
     texture.flipY = false;
+    texture.channel = this.data.channel;
     this.texture = texture;
 
     this.el.addEventListener('object3dset', this.update.bind(this));
