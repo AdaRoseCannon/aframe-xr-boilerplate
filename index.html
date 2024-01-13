@@ -22,7 +22,7 @@
   <script src="model-utils.js"></script>
   
   <!-- Our custom behaviour -->
-	<script src="main.js"></script>
+  <script src="main.js"></script>
   
   <title>AFrame Handy Demo</title>
   <meta property="og:title" content="AFrame Handy Work Demo" />
@@ -37,17 +37,17 @@
 </head>
 
 <body>
-	<a-scene
+  <a-scene
     physx="autoLoad: true; delay: 1000; wasmUrl: https://cdn.jsdelivr.net/gh/c-frame/physx@v0.1.0/wasm/physx.release.wasm; useDefaultScene: false;"
-		webxr="overlayElement:#dom-overlay;"
-		background="color:skyblue;"
-		reflection="directionalLight:#dirlight;"
+    webxr="overlayElement:#dom-overlay;"
+    background="color:skyblue;"
+    reflection="directionalLight:#dirlight;"
     renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:2;toneMapping:ACESFilmic;"
-		ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
-		shadow="type: pcfsoft"
-		gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;"
+    ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
+    shadow="type: pcfsoft"
+    gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;"
     ar-cursor raycaster="objects: #my-ar-objects a-sphere"
-	>
+  >
     <a-assets>
       <a-asset-item id="building-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
       <a-asset-item id="navmesh-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
@@ -165,13 +165,13 @@
     </a-entity>
 
     <!-- This plane is only visible in AR and follows the given target to provide it with shadows.-->
-		<a-light id="dirlight" shadow-camera-automatic="[ar-shadow-helper],#table,#ladder" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
+    <a-light id="dirlight" shadow-camera-automatic="[ar-shadow-helper],#table,#ladder" intensity="0.8" light="castShadow:true;type:directional" position="0 3 -6"></a-light>
     <a-entity ar-shadow-helper="target:#my-ar-objects;light:#dirlight;" visible="false">
       <a-plane rotation="-90 0 0" shadow="cast:false;receive:true;" position="0 0.01 0" material="shader:shadow; depthWrite:false; opacity:0.9;"></a-plane>
     </a-entity>
 
     <a-entity hide-on-enter-ar position="0 -0.2 0" environment="lighting:none;shadow:true;preset: osiris;"></a-entity>
-		<a-entity rotation="0 -50 0" position="0 0 0" hide-on-enter-ar>
+    <a-entity rotation="0 -50 0" position="0 0 0" hide-on-enter-ar>
       <a-box 
         position="-5.148 -0.1 -0.355"
         visible="false"
@@ -221,13 +221,13 @@
 
     <a-sphere color="black" radius="0.005" id="cursor" material="shader:flat" visible="false"></a-sphere>
 
-	</a-scene>
+  </a-scene>
 
-	<div id="dom-overlay">
+  <div id="dom-overlay">
     <h1>
       Hello World
     </h1>
-		<div class="overlay-footer">
+    <div class="overlay-footer">
       <section style="display: inline-block; background: lavenderblush; color: #333333; border-radius: 1em; padding: 1em; margin:0; accent-color: hotpink;" id="my-interface">
         <h2>Settings</h2>
         <fieldset style="border:none;">
@@ -267,7 +267,7 @@
       </script>
       <div id="dom-overlay-message">Enter AR or VR to start.</div>
     </div>
-	</div>
+  </div>
   
   <div class="glitchButton" style="position: absolute; top: 1em; right: 1em;"></div><script src="https://button.glitch.me/button.js"></script>
 </body>
