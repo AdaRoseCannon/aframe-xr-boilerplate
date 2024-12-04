@@ -109,10 +109,10 @@ AFRAME.registerComponent("toggle-physics", {
         const referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
         const pose = e.detail.frame.getPose(e.detail.inputSource.gripSpace, referenceSpace);
         if (pose && pose.angularVelocity) {
-          this.el.components['physx-body'].rigidBody.setAngularVelocity(pose.angularVelocity);
+          this.el.components['physx-body'].rigidBody.setAngularVelocity(pose.angularVelocity, true);
         }
         if (pose && pose.linearVelocity) {
-          this.el.components['physx-body'].rigidBody.setLinearVelocity(pose.linearVelocity);
+          this.el.components['physx-body'].rigidBody.setLinearVelocity(pose.linearVelocity, true);
         }
       }
     }
