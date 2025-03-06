@@ -86,11 +86,10 @@ AFRAME.registerComponent("physx-body-from-model", {
     default: ''
   },
   init () {
-    const details = this.data;
-    this.onLoad = function () {
-      this.setAttribute('physx-body', details);
-      this.removeAttribute('physx-body-from-model');
-    }
+    this.onLoad = () => {
+      this.el.setAttribute("physx-body", this.data);
+      this.el.removeAttribute("physx-body-from-model");
+    };
     this.el.addEventListener('object3dset', this.onLoad);
   },
   remove () {
