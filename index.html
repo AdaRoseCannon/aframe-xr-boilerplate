@@ -29,10 +29,10 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@AdaRoseCannon" />
   <meta name="twitter:creator" content="@AdaRoseCannon" />
-  <meta property="og:url" content="https://aframe-xr-starterkit.glitch.me/" />
+  <meta property="og:url" content="https://ada.is/aframe-xr-boilerplate/" />
   <meta name="description" content="A sample scene for working with WebXR Hand Tracking" />
   <meta property="og:description" content="A sample scene for working with WebXR Hand Tracking" />
-  <meta property="og:image" content="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/snapshot.png?v=1645201177438" />
+  <meta property="og:image" content="./assets/snapshot.png" />
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -50,18 +50,18 @@
     xr-mode-ui="XRMode:xr"
   >
     <a-assets>
-      <a-asset-item id="building-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/venue.glb?v=1644331843500"></a-asset-item>
-      <a-asset-item id="navmesh-glb" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/navmesh.glb?v=1644329586500"></a-asset-item>
-      <a-asset-item id="right-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-right-hand-webxr/model.gltf"></a-asset-item>
-      <a-asset-item id="left-gltf" src="https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/skeleton-left-hand-webxr/model.gltf"></a-asset-item>
-      <a-asset-item id="watch-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watch.glb?v=1645016979219"></a-asset-item>
-      <a-asset-item id="sword-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/katana.glb?v=1648465043810"></a-asset-item>
-      <a-asset-item id="watergun-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/watergun.glb?v=1646916260646"></a-asset-item>
-      <a-asset-item id="stew-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/model.gltf?v=1690887932932"></a-asset-item>
-      <a-asset-item id="table-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/small_wooden_table_01_1k-v1.glb?v=1647263187998"></a-asset-item>
-      <a-asset-item id="clock-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/vintage_grandfather_clock_01_1k-v2.glb?v=1647265174189"></a-asset-item>
-      <a-asset-item id="ladder-gltf" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/ladder.glb?v=1648465045608"></a-asset-item>
-      <img id="bake" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/Bake(3).webp?v=1644331344700" crossorigin="anonymous">
+      <a-asset-item id="building-glb" src="./assets/venue.glb"></a-asset-item>
+      <a-asset-item id="navmesh-glb" src="./assets/navmesh.glb"></a-asset-item>
+      <a-asset-item id="right-gltf" src="./assets/skeleton-right-hand-webxr/model.gltf"></a-asset-item>
+      <a-asset-item id="left-gltf" src="./assets/skeleton-left-hand-webxr/model.gltf"></a-asset-item>
+      <a-asset-item id="watch-gltf" src="./assets/watch.glb"></a-asset-item>
+      <a-asset-item id="sword-gltf" src="./assets/katana.glb"></a-asset-item>
+      <a-asset-item id="watergun-gltf" src="./assets/watergun.glb"></a-asset-item>
+      <a-asset-item id="stew-gltf" src="./assets/model.gltf"></a-asset-item>
+      <a-asset-item id="table-gltf" src="./assets/small_wooden_table_01_1k-v1.glb"></a-asset-item>
+      <a-asset-item id="clock-gltf" src="./assets/vintage_grandfather_clock_01_1k-v2.glb"></a-asset-item>
+      <a-asset-item id="ladder-gltf" src="./assets/ladder.glb"></a-asset-item>
+      <img id="bake" src="./assets/Bake(3).webp" crossorigin="anonymous">
       <a-mixin id="animations" animation__click="property: components.material.material.color; type: color; to: blue; startEvents: click; dur: 500;"></a-mixin>
       <a-mixin id="blink" blink-controls="rotateOnTeleport:false;cameraRig: #cameraRig; teleportOrigin: #head; collisionEntities:.navmesh;"></a-mixin>
       <a-mixin id="handle-visual" geometry="width:0.05;height:0.05;depth:0.2"></a-mixin>
@@ -160,7 +160,7 @@
     
     <a-entity id="my-ar-objects" position="-6 0 1">
       <!-- "Dusty Piano" (https://skfb.ly/66EPx) by Vincent074 is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). -->
-      <a-gltf-model id="piano" rotation="0 100 0" shadow="receive:false;cast:true;" src="https://cdn.glitch.global/d29f98b4-ddd1-4589-8b66-e2446690e697/piano.glb?v=1644414775118">
+      <a-gltf-model id="piano" rotation="0 100 0" shadow="receive:false;cast:true;" src="./assets/piano.glb">
         <a-plane rotation="-90 0 0" width="1.5" height="0.6" class="navmesh-hole" visible="false"></a-plane>
       </a-gltf-model>
     </a-entity>
@@ -269,8 +269,6 @@
       <div id="dom-overlay-message">Enter AR or VR to start.</div>
     </div>
   </div>
-  
-  <div class="glitchButton" style="position: absolute; top: 1em; right: 1em;"></div><script src="https://button.glitch.me/button.js"></script>
 </body>
 
 </html>
