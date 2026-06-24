@@ -7,10 +7,10 @@
   </script>
 
   <!-- the AFrame library and 3rd party components -->
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/components/sphere-collider.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.7.0/dist/components/sphere-collider.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.7.0/dist/aframe-extras.controls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/physx@v0.3.0/dist/physx.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handy-work@3.1.13/build/handy-controls.min.js"></script>
@@ -42,9 +42,9 @@
     webxr="overlayElement:#dom-overlay;"
     background="color:skyblue;"
     reflection="directionalLight:#dirlight;"
-    renderer="alpha:true;physicallyCorrectLights:true;colorManagement:true;exposure:2;toneMapping:ACESFilmic;"
+    renderer="exposure:2;toneMapping:ACESFilmic;"
     ar-hit-test="target:#my-ar-objects;type:footprint;footprintDepth:0.2;"
-    shadow="type: pcfsoft"
+    shadow="type: pcf"
     gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.7/;"
     ar-cursor raycaster="objects: #my-ar-objects a-sphere"
     xr-mode-ui="XRMode:xr"
@@ -127,10 +127,10 @@
 
         <!-- The direction hands are facing, we will also attach labels to show the currently detected pose or controller button -->
         <!-- These also do teleportaion for Blink controls in VR -->
-        <a-entity data-right="ray" mixin="blink" cursor="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
+        <a-entity data-right="ray" mixin="blink" cursor="hand: right" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
           <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-entity>
-        <a-entity data-left="ray" mixin="blink" cursor="" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
+        <a-entity data-left="ray" mixin="blink" cursor="hand: left" raycaster="objects:[html];far:0.3;showLine:false;lineColor:black;">
           <a-entity position="0 0 -0.22" visible="false" class="pose-label" text="value: Hello World; align: center;"></a-entity>
         </a-entity>
         
